@@ -262,7 +262,7 @@ export class RealtimeAnalysisService {
    */
   private cleanupCache() {
     const now = Date.now();
-    for (const [key, value] of this.analysisCache.entries()) {
+    for (const [key, value] of Array.from(this.analysisCache.entries())) {
       if (now - value.timestamp > this.CACHE_TTL) {
         this.analysisCache.delete(key);
       }

@@ -14,6 +14,28 @@ export interface RoundScores {
   totalScore: number;
 }
 
+// Character card types for Pokemon-style cards
+export interface Attack {
+  name: string;
+  power: number;
+  description: string;
+  type: string;
+}
+
+export interface CharacterCardData {
+  name: string;
+  rapStyle: string;
+  bio: string;
+  attacks: Attack[];
+  stats: {
+    flow: number;
+    punchlines: number;
+    creativity: number;
+    delivery: number;
+  };
+  generatedAt: Date;
+}
+
 // Battles table with user authentication
 export const battles = pgTable("battles", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -148,7 +170,8 @@ export const users = pgTable("users", {
   openaiApiKey: varchar("openai_api_key"), // User's encrypted OpenAI API key
   groqApiKey: varchar("groq_api_key"), // User's encrypted Groq API key
   elevenlabsApiKey: varchar("elevenlabs_api_key"), // User's encrypted ElevenLabs API key
-  preferredTtsService: varchar("preferred_tts_service").default("elevenlabs"), // "openai", "groq", "elevenlabs", "system"
+  myshellApiKey: varchar("myshell_api_key"), // User's encrypted MyShell API key
+  preferredTtsService: varchar("preferred_tts_service").default("elevenlabs"), // "openai", "groq", "elevenlabs", "myshell", "system"
   bio: text("bio"), // User's bio/description
   rapStyle: varchar("rap_style"), // User's rap style (e.g., "aggressive", "smooth", "technical")
   characterCardUrl: varchar("character_card_url"), // URL to generated character card image

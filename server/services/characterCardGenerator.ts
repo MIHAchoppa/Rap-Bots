@@ -192,9 +192,9 @@ export class CharacterCardGenerator {
 
     return {
       flow: Math.min(Math.max(60 + experienceBonus + winRateBonus, 40), 100),
-      wordplay: Math.min(Math.max(55 + experienceBonus + winRateBonus, 40), 100),
+      punchlines: Math.min(Math.max(55 + experienceBonus + winRateBonus, 40), 100),
+      creativity: Math.min(Math.max(58 + experienceBonus + winRateBonus, 40), 100),
       delivery: Math.min(Math.max(65 + experienceBonus + winRateBonus, 40), 100),
-      stage_presence: Math.min(Math.max(58 + experienceBonus + winRateBonus, 40), 100),
     };
   }
 
@@ -263,7 +263,8 @@ export class CharacterCardGenerator {
         throw new Error(`HF API error: ${response.statusText}`);
       }
 
-      const resultBuffer = await response.buffer();
+      const arrayBuffer = await response.arrayBuffer();
+      const resultBuffer = Buffer.from(arrayBuffer);
       return resultBuffer;
     } catch (error) {
       console.error("Hugging Face inpainting error:", error);

@@ -12,6 +12,9 @@ import { scoringService } from "./services/scoring";
 import { userTTSManager } from "./services/user-tts-manager";
 import { crowdReactionService } from "./services/crowdReactionService";
 import { FineTuningService } from "./services/fine-tuning";
+import { matchmakingService } from "./services/matchmaking";
+import { realtimeAnalysisService } from "./services/realtime-analysis";
+import { CharacterCardGenerator } from "./services/characterCardGenerator";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -35,6 +38,9 @@ const stripe = process.env.STRIPE_SECRET_KEY
 if (!stripe) {
   console.warn('⚠️ Stripe not configured - payment features will be disabled');
 }
+
+// Initialize character card generator
+const characterCardGenerator = new CharacterCardGenerator();
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Service Worker endpoint for PWA functionality
@@ -1440,7 +1446,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let adjustedComplexity = battle.lyricComplexity || 50;
       let adjustedIntensity = battle.styleIntensity || 50;
 
-      if (isCloneBattle) {
+      if (isCloneBattle && battle.aiCharacterId) {
         console.log(`🤖 Clone battle detected - adjusting AI to match user's skill level`);
         const cloneId = battle.aiCharacterId.replace('clone_', '');
         const clone = await storage.getCloneById(cloneId);

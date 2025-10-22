@@ -66,7 +66,7 @@ export function SimpleAudioPlayer({
       audio.addEventListener('error', (error) => {
         console.error('🔊 Audio error:', error);
         console.error('🔊 Audio error details - src:', audio.src, 'readyState:', audio.readyState, 'networkState:', audio.networkState);
-        console.error('🔊 Audio error event:', error.target?.error);
+        console.error('🔊 Audio error event:', (error.target as HTMLAudioElement)?.error);
         if (showFallbackButton) {
           setShowPlayButton(true);
           setAutoplayAttempted(true);

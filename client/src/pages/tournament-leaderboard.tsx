@@ -82,6 +82,7 @@ export default function TournamentLeaderboard() {
         </div>
 
         {/* Leaderboard */}
+        <div>
         <Card className="bg-gray-900 border-gray-700">
           <CardHeader>
             <CardTitle className="text-white flex items-center">
@@ -168,6 +169,7 @@ export default function TournamentLeaderboard() {
             )}
           </CardContent>
         </Card>
+        </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">

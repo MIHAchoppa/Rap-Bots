@@ -67,8 +67,10 @@ export class ComprehensiveRhymeFamilyTracker {
     // Clean old battle data (keep last 10 battles)
     if (this.battleRhymeFamilies.size > 10) {
       const oldestBattleId = this.battleRhymeFamilies.keys().next().value;
-      this.battleRhymeFamilies.delete(oldestBattleId);
-      this.battleProgression.delete(oldestBattleId);
+      if (oldestBattleId) {
+        this.battleRhymeFamilies.delete(oldestBattleId);
+        this.battleProgression.delete(oldestBattleId);
+      }
     }
   }
 

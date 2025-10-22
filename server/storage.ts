@@ -86,6 +86,8 @@ export interface IStorage {
   updateUserAPIKeys(userId: string, keys: { 
     openaiApiKey?: string; 
     groqApiKey?: string; 
+    elevenlabsApiKey?: string;
+    myshellApiKey?: string;
     preferredTtsService?: string 
   }): Promise<User>;
   getUserAPIKeysStatus(userId: string): Promise<{
@@ -604,6 +606,7 @@ export class DatabaseStorage implements IStorage {
       openaiApiKey?: string; 
       groqApiKey?: string; 
       elevenlabsApiKey?: string;
+      myshellApiKey?: string;
       preferredTtsService?: string 
     }
   ): Promise<User> {
@@ -622,6 +625,11 @@ export class DatabaseStorage implements IStorage {
     if (keys.elevenlabsApiKey !== undefined) {
       // In production, you'd encrypt the API key here  
       updateData.elevenlabsApiKey = keys.elevenlabsApiKey;
+    }
+
+    if (keys.myshellApiKey !== undefined) {
+      // In production, you'd encrypt the API key here  
+      updateData.myshellApiKey = keys.myshellApiKey;
     }
 
     if (keys.preferredTtsService !== undefined) {
