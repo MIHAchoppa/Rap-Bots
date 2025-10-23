@@ -13,6 +13,7 @@ import { userTTSManager } from "./services/user-tts-manager";
 import { crowdReactionService } from "./services/crowdReactionService";
 import { FineTuningService } from "./services/fine-tuning";
 import { mlRapperCloningService } from "./services/ml-rapper-cloning";
+import { matchmakingService } from "./services/matchmaking";
 import multer from "multer";
 import path from "path";
 import fs from "fs";

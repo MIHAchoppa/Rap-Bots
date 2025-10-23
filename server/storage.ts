@@ -71,6 +71,7 @@ export interface IStorage {
     totalWins: number;
     winRate: number;
     battlesThisMonth: number;
+    averageScore: number;
   }>;
 
   // Tournament operations
@@ -365,6 +366,7 @@ export class DatabaseStorage implements IStorage {
     totalWins: number;
     winRate: number;
     battlesThisMonth: number;
+    averageScore: number;
   }> {
     // Cache user stats for 5 minutes
     const cacheKey = `user_stats_${userId}`;
@@ -376,7 +378,7 @@ export class DatabaseStorage implements IStorage {
     try {
       const user = await this.getUser(userId);
       if (!user) {
-        return { totalBattles: 0, totalWins: 0, winRate: 0, battlesThisMonth: 0 };
+        return { totalBattles: 0, totalWins: 0, winRate: 0, battlesThisMonth: 0, averageScore: 0 };
       }
 
       const now = new Date();
@@ -393,11 +395,20 @@ export class DatabaseStorage implements IStorage {
           )
         );
 
+      // Calculate average score from user's battles
+      const userBattles = await db
+        .select({ avgScore: sql<number>`avg(${battles.userScore})` })
+        .from(battles)
+        .where(eq(battles.userId, userId));
+
+      const averageScore = userBattles[0]?.avgScore || 0;
+
       const result = {
         totalBattles: user.totalBattles || 0,
         totalWins: user.totalWins || 0,
         winRate: user.totalBattles ? ((user.totalWins || 0) / user.totalBattles) * 100 : 0,
         battlesThisMonth: battlesThisMonthCount[0]?.count || 0,
+        averageScore: Math.round(averageScore),
       };
 
       // Cache the result for 5 minutes
@@ -406,7 +417,7 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error('Error fetching user stats:', error);
       // Return fallback stats if query fails
-      return { totalBattles: 0, totalWins: 0, winRate: 0, battlesThisMonth: 0 };
+      return { totalBattles: 0, totalWins: 0, winRate: 0, battlesThisMonth: 0, averageScore: 0 };
     }
   }
 

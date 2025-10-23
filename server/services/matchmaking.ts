@@ -61,7 +61,7 @@ export class MatchmakingService {
 
   private cleanupQueue() {
     const now = Date.now();
-    for (const [key, entry] of this.matchQueue.entries()) {
+    for (const [key, entry] of Array.from(this.matchQueue.entries())) {
       if (now - entry.timestamp > this.MATCH_TIMEOUT) {
         this.matchQueue.delete(key);
       }
@@ -177,7 +177,7 @@ export class MatchmakingService {
     }
 
     // Look for another player in queue with similar skill level
-    for (const [otherId, otherEntry] of this.matchQueue.entries()) {
+    for (const [otherId, otherEntry] of Array.from(this.matchQueue.entries())) {
       if (otherId !== userId) {
         // Found a match! (simplified for now)
         this.matchQueue.delete(userId);
