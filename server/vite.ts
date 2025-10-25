@@ -8,6 +8,9 @@ import { nanoid } from "nanoid";
 
 const viteLogger = createLogger();
 
+// Log file path
+const LOG_FILE_PATH = "/tmp/server.log";
+
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
     hour: "numeric",
@@ -16,7 +19,19 @@ export function log(message: string, source = "express") {
     hour12: true,
   });
 
-  console.log(`${formattedTime} [${source}] ${message}`);
+  const logMessage = `${formattedTime} [${source}] ${message}`;
+  
+  // Log to console
+  console.log(logMessage);
+  
+  // Log to file
+  try {
+    fs.appendFileSync(LOG_FILE_PATH, logMessage + '\n', 'utf8');
+  } catch (error) {
+    // Silently fail to avoid disrupting the application
+    // Only log to console if file write fails
+    console.error(`Failed to write to log file: ${error}`);
+  }
 }
 
 export async function setupVite(app: Express, server: Server) {
