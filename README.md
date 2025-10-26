@@ -34,5 +34,9 @@ To get started with the Rap Bots project, follow these steps:
 - **Real-time Interaction**: Engage with bots in real-time.
 - **Customizable Bots**: Tailor bots to meet your needs.
 - **Analytics Dashboard**: Monitor bot performance and user engagement.
+- **MyShell AI Integration**: Powered by MyShell's advanced AI capabilities.
+
+## Additional Resources
+- **[Tokenomics](./TOKENOMICS.md)**: Learn about the $SHELL token that powers the MyShell ecosystem.
 
 We hope you enjoy using Rap Bots!
