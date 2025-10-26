@@ -65,17 +65,13 @@ export function useBattleState(battleId?: string) {
       const formData = new FormData();
       if (data.audio) {
         formData.append("audio", data.audio, "recording.wav");
-        console.log("Added audio to FormData:", data.audio.size, "bytes");
       }
       if (data.userVerse) {
         formData.append("userVerse", data.userVerse);
-        console.log("Added userVerse to FormData:", data.userVerse);
       }
       
       // Debug FormData contents
-      console.log("FormData entries:");
       Array.from(formData.entries()).forEach(([key, value]) => {
-        console.log(key, value);
       });
 
       try {
@@ -92,14 +88,6 @@ export function useBattleState(battleId?: string) {
         }
 
         const result = await res.json();
-        console.log("🎉 Battle round response received:", {
-          hasUserText: !!result.userText,
-          hasAiResponse: !!result.aiResponse,
-          hasAudioUrl: !!result.audioUrl,
-          userScore: result.userScore,
-          aiScore: result.aiScore,
-          keys: Object.keys(result)
-        });
         
         return result;
       } catch (error) {

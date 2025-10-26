@@ -179,8 +179,6 @@ export default function Subscribe() {
       return response.json();
     },
     onSuccess: (data) => {
-      console.log('🎉 Subscription API response:', data);
-      console.log('🔑 Client secret received:', !!data.clientSecret);
       setClientSecret(data.clientSecret);
       toast({
         title: "Payment Ready",
@@ -206,8 +204,6 @@ export default function Subscribe() {
       return response.json();
     },
     onSuccess: (data) => {
-      console.log('🎉 One-time payment intent created:', data);
-      console.log('🔑 Client secret received:', !!data.clientSecret);
       setClientSecret(data.clientSecret);
       toast({
         title: "Payment Ready",

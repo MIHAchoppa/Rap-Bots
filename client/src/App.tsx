@@ -79,7 +79,6 @@ function App() {
             <AudioAutoplayGate 
               showDetailedInstructions={true}
               onAudioUnlocked={() => {
-                console.log('🎵 Global audio unlocked - all auto-play features enabled');
               }}
             />
             <ErrorBoundary>

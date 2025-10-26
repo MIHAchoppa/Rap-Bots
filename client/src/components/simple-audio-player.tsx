@@ -26,12 +26,6 @@ export function SimpleAudioPlayer({
 
   useEffect(() => {
     if (audioUrl) {
-      console.log('🎵 SimpleAudioPlayer: New audio URL received');
-      console.log('🎵 Audio URL length:', audioUrl.length);
-      console.log('🎵 Audio URL format:', audioUrl.substring(0, 50) + '...');
-      console.log('🎵 Audio URL FULL:', audioUrl);
-      console.log('🎵 Auto-play enabled:', autoPlay);
-      console.log('🎵 AUDIO DEBUG: Props received - audioUrl:', audioUrl, 'autoPlay:', autoPlay, 'volume:', volume);
       
       // Clean up previous audio
       if (audioRef.current) {
@@ -40,7 +34,6 @@ export function SimpleAudioPlayer({
       }
 
       // Create new audio element with optimal settings
-      console.log('🔊 Creating new Audio element with volume:', volume);
       const audio = new Audio(audioUrl);
       audio.volume = volume;
       audio.preload = 'auto';
@@ -53,13 +46,11 @@ export function SimpleAudioPlayer({
       
       // Event listeners
       audio.addEventListener('play', () => {
-        console.log('🔊 Audio started playing');
         setShowPlayButton(false); // Hide fallback button on successful play
         onPlay?.();
       });
 
       audio.addEventListener('ended', () => {
-        console.log('🔇 Audio playback ended');
         onEnded?.();
       });
 
@@ -75,21 +66,19 @@ export function SimpleAudioPlayer({
       });
       
       // Additional debugging events
-      audio.addEventListener('loadstart', () => console.log('🎵 Audio loadstart'));
-      audio.addEventListener('loadeddata', () => console.log('🎵 Audio loadeddata'));
-      audio.addEventListener('canplay', () => console.log('🎵 Audio canplay'));
-      audio.addEventListener('canplaythrough', () => console.log('🎵 Audio canplaythrough'));
+      audio.addEventListener('loadstart', () => {});
+      audio.addEventListener('loadeddata', () => {});
+      audio.addEventListener('canplay', () => {});
+      audio.addEventListener('canplaythrough', () => {});
 
       // Use shared audio manager for comprehensive auto-play
       if (autoPlay) {
-        console.log('🔥 Using shared AudioManager for auto-play');
         
         attemptAutoplay(audio, {
           volume,
           retryAttempts: 3,
           fallbackToMuted: true,
           onFallback: () => {
-            console.log('🔄 Auto-play failed - showing fallback button');
             if (showFallbackButton) {
               setShowPlayButton(true);
               setAutoplayAttempted(true);
@@ -97,7 +86,6 @@ export function SimpleAudioPlayer({
           }
         }).then(success => {
           if (success) {
-            console.log('✅ Shared manager auto-play successful');
             onPlay?.();
           }
         }).catch(error => {
@@ -122,7 +110,6 @@ export function SimpleAudioPlayer({
   const handleManualPlay = async () => {
     if (audioRef.current) {
       try {
-        console.log('🎯 Manual play button clicked');
         await audioRef.current.play();
         setShowPlayButton(false);
         onPlay?.();

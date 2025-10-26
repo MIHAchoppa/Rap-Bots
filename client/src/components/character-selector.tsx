@@ -73,7 +73,7 @@ export function CharacterSelector({ onCharacterSelect, selectedCharacter }: Char
                   {character.avatar ? (
                     <img
                       src={`/attached_assets/generated_images/${character.avatar}`}
-                      onLoad={() => console.log(`Successfully loaded: ${character.avatar}`)}
+                      onLoad={() => {}}
                       alt={character.displayName}
                       className="w-full h-full object-cover"
                       onError={(e) => {

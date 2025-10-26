@@ -105,7 +105,6 @@ export function AdvancedLipSync({
     
     // Initialize audio using shared audio manager when needed
     if (!audioRef.current && audioUrl && isPlaying) {
-      console.log('🎵 AdvancedLipSync: Initializing audio with shared manager');
       audioRef.current = new Audio(audioUrl);
       audioRef.current.crossOrigin = 'anonymous';
       audioRef.current.volume = disableAudioPlayback ? 0 : 1.0;
@@ -117,13 +116,11 @@ export function AdvancedLipSync({
       // Use shared audio manager for auto-play
       if (!disableAudioPlayback) {
         audioRef.current.addEventListener('loadeddata', () => {
-          console.log('🔥 AdvancedLipSync: Audio ready - using shared manager for auto-play');
           attemptAutoplay(audioRef.current!, {
             volume: 1.0,
             fallbackToMuted: true,
             retryAttempts: 2,
             onFallback: () => {
-              console.log('🔄 AdvancedLipSync: Auto-play failed, continuing with lip sync simulation');
             }
           }).catch(error => {
             console.error('🔊 AdvancedLipSync: Auto-play error:', error);
@@ -170,7 +167,6 @@ export function AdvancedLipSync({
           };
           
           simulateLipSync();
-          console.log('MuseTalk-inspired lip sync initialized with simulation mode (no audio duplication)');
           return;
         }
 
@@ -245,13 +241,11 @@ export function AdvancedLipSync({
         
         if (!disableAudioPlayback && audioRef.current) {
           // Use shared manager for reliable auto-play
-          console.log('🔥 AdvancedLipSync: Using shared manager for TTS auto-play');
           attemptAutoplay(audioRef.current, {
             volume: 1.0,
             fallbackToMuted: true,
             retryAttempts: 2,
             onFallback: () => {
-              console.log('🔄 AdvancedLipSync: TTS auto-play failed, continuing with analysis');
             }
           }).then(success => {
             if (success) {
