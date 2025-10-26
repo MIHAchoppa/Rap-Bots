@@ -60,7 +60,6 @@ export class PhoneticRhymeAnalyzer {
 
   constructor() {
     this.loadCMUDictionary();
-    console.log('🎯 PhoneticRhymeAnalyzer initialized with CMU dictionary');
   }
 
   /**
@@ -110,7 +109,6 @@ export class PhoneticRhymeAnalyzer {
         wordCount++;
       }
     }
-    console.log(`✅ Loaded ${this.cmuDict.size} words with ${wordCount} pronunciations from CMU dictionary`);
   }
 
   private loadEssentialPhonetics(): void {
@@ -150,7 +148,6 @@ export class PhoneticRhymeAnalyzer {
     ]);
 
     this.cmuDict = essentialWords;
-    console.log(`✅ Loaded ${this.cmuDict.size} essential rap phonetics`);
   }
 
   /**
@@ -166,24 +163,20 @@ export class PhoneticRhymeAnalyzer {
     const cacheKey = `${lyrics.substring(0, 100)}_${battleId || 'default'}`;
     if (!isFinalScore && this.battleCache.has(cacheKey)) {
       const cached = this.battleCache.get(cacheKey)!;
-      console.log('📋 Using cached rhyme analysis for faster response');
       return cached;
     }
     
     // Advanced phonetic analysis enabled
-    console.log(`🎯 ${isFinalScore ? 'FINAL SCORE' : 'Enhanced'} rhyme analysis enabled - full phonetic processing`);
     
     // CRITICAL: Final battle scores bypass ALL rate limiting
     if (!isFinalScore) {
       // Circuit breaker: prevent multiple simultaneous analyses (but allow some concurrency for different users)
       if (PhoneticRhymeAnalyzer.analysisInProgress && (now - PhoneticRhymeAnalyzer.lastAnalysisTime) < 25) {
-        console.log('🚫 PhoneticRhymeAnalyzer: Analysis blocked due to rapid concurrent requests');
         return this.createEmptyResult();
       }
       
       // Rate limiting: prevent excessively frequent analyses while allowing battle-speed requests
       if (now - PhoneticRhymeAnalyzer.lastAnalysisTime < PhoneticRhymeAnalyzer.MIN_ANALYSIS_INTERVAL) {
-        console.log('🚫 PhoneticRhymeAnalyzer: Rate limited (analysis too frequent), falling back to simple analysis');
         // Fallback to simple analysis instead of completely skipping
         return {
           lines: [],
@@ -197,7 +190,6 @@ export class PhoneticRhymeAnalyzer {
       
       // Depth protection (relaxed for final scores)
       if (PhoneticRhymeAnalyzer.analysisDepth >= PhoneticRhymeAnalyzer.MAX_ANALYSIS_DEPTH) {
-        console.log('🚫 PhoneticRhymeAnalyzer: Maximum recursion depth reached');
         PhoneticRhymeAnalyzer.analysisDepth = 0;
         return this.createEmptyResult();
       }
@@ -219,7 +211,6 @@ export class PhoneticRhymeAnalyzer {
     try {
       // Log analysis start with timing info for battle performance monitoring
       if (PhoneticRhymeAnalyzer.analysisDepth === 1) {
-        console.log(`🎯 PhoneticRhymeAnalyzer: Starting analysis (depth: ${PhoneticRhymeAnalyzer.analysisDepth}, interval: ${now - PhoneticRhymeAnalyzer.lastAnalysisTime}ms)`);
       }
 
       // Reset state for new analysis
@@ -732,8 +723,6 @@ export class PhoneticRhymeAnalyzer {
 
       // Log tracking for battle analysis (only for final scores to avoid spam)
       if (isFinalScore) {
-        console.log(`🎯 Battle ${battleId}: Tracked ${battleFamilies.size} rhyme families across ${battleProgress.rounds} rounds`);
-        console.log(`🎯 Family evolution: ${battleProgress.familyEvolution.join(' → ')}`);
       }
 
       // Clean up old battle data to prevent memory leaks (keep last 10 battles)
@@ -776,12 +765,10 @@ export class PhoneticRhymeAnalyzer {
     const enhancedCacheKey = `enhanced_${lyrics.substring(0, 50)}_${battleId || 'default'}_${isFinalScore}`;
     if (!isFinalScore && this.enhancedCache.has(enhancedCacheKey)) {
       const cached = this.enhancedCache.get(enhancedCacheKey);
-      console.log('📋 Using cached enhanced analysis for faster response');
       return cached;
     }
 
     // Enhanced analysis re-enabled for better scoring accuracy
-    console.log(`🎯 Enhanced rhyme analysis ${isFinalScore ? 'FINAL SCORE' : 'enabled'} - full phonetic processing`);
     
     try {
       // Use advanced rhyme scheme analysis for enhanced scoring

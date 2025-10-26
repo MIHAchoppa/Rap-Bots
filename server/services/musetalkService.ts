@@ -46,14 +46,12 @@ export class MuseTalkService {
    */
   async initialize(): Promise<boolean> {
     try {
-      console.log('Initializing MuseTalk service...');
       
       const { stdout, stderr } = await execAsync(`${this.pythonPath} ${this.servicePath} --initialize`);
       
       // Check if initialization was successful
       if (stdout.includes('SUCCESS')) {
         this.initialized = true;
-        console.log('MuseTalk service initialized successfully');
       } else {
         this.initialized = false;
         console.warn('MuseTalk service initialization failed - running in fallback mode');
@@ -88,7 +86,6 @@ export class MuseTalkService {
         return { success: false, error: `Avatar image not found: ${imagePath}` };
       }
 
-      console.log(`Preparing MuseTalk avatar for ${character.displayName} (${avatarId})`);
 
       const { stdout } = await execAsync(
         `${this.pythonPath} ${this.servicePath} --prepare-avatar "${avatarId}" "${imagePath}"`
@@ -103,7 +100,6 @@ export class MuseTalkService {
       
       if (result.success) {
         this.preparedAvatars.add(avatarId);
-        console.log(`Avatar ${avatarId} prepared successfully`);
       } else {
         console.error(`Avatar preparation failed: ${result.error}`);
       }
@@ -144,7 +140,6 @@ export class MuseTalkService {
         return { success: false, error: `Audio file not found: ${audioPath}` };
       }
 
-      console.log(`Generating MuseTalk lip sync video for ${character.displayName}`);
 
       const { stdout } = await execAsync(
         `${this.pythonPath} ${this.servicePath} --generate "${avatarId}" "${audioPath}" "${outputPath}"`
@@ -159,7 +154,6 @@ export class MuseTalkService {
       };
       
       if (result.success) {
-        console.log(`Lip sync video generated: ${outputPath} (${result.duration}s)`);
       } else {
         console.error(`Video generation failed: ${result.error}`);
       }

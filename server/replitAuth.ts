@@ -142,13 +142,11 @@ export async function setupAuth(app: Express) {
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
   try {
     if (!req.isAuthenticated()) {
-      console.log('User not authenticated via Passport');
       return res.status(401).json({ message: "Unauthorized" });
     }
 
     const user = req.user as any;
     if (!user || !user.claims) {
-      console.log('No user or claims found in session');
       return res.status(401).json({ message: "Unauthorized" });
     }
 
@@ -183,14 +181,12 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
         const config = await getOidcConfig();
         const tokenResponse = await client.refreshTokenGrant(config, refreshToken);
         updateUserSession(user, tokenResponse);
-        console.log('Token refreshed successfully');
         return next();
       } catch (refreshError) {
         console.error('Token refresh failed:', refreshError);
       }
     }
 
-    console.log('Authentication failed - token expired and refresh failed');
     return res.status(401).json({ message: "Unauthorized" });
   } catch (error) {
     console.error('Authentication middleware error:', error);

@@ -78,7 +78,6 @@ export class GroqTTSService {
       // Clean robotic prefixes/suffixes
       robotText = `INITIATING VERBAL COMBAT. ${robotText}. TERMINATION PROTOCOL COMPLETE.`;
       
-      console.log(`🤖 CYPHER-9000 FIXED VOICE: Clean robotic speech for TTS`);
       return robotText;
     }
     return text;
@@ -94,13 +93,11 @@ export class GroqTTSService {
       speedMultiplier?: number;
     } = {}
   ): Promise<{ audioUrl: string; duration: number }> {
-    console.log(`🎤 Groq TTS generating for ${characterId}: "${text.substring(0, 50)}..."`);
     
     try {
       const voice = this.getVoiceForCharacter(characterId, options.gender);
       const voiceStyle = options.voiceStyle || 'confident';
       
-      console.log(`🚀 Using Groq voice: ${voice} with style: ${voiceStyle}`);
       
       // Apply robot voice effects for CYPHER-9000
       const processedText = this.applyRobotVoiceEffects(text, characterId);
@@ -129,13 +126,7 @@ export class GroqTTSService {
       };
 
       // Log dynamic voice settings
-      console.log(`🎤 Voice Settings for ${characterId}:`);
-      console.log(`   - Voice: ${voice}`);
-      console.log(`   - Speed: ${ttsOptions.speed}x (${this.getSpeedDescription(ttsOptions.speed)})`);
-      console.log(`   - Style: ${voiceStyle}`);
       if (characterId === 'cypher') {
-        console.log(`   - 🤖 CYPHER-9000: RAPID-FIRE TERMINATION PROTOCOL ACTIVE`);
-        console.log(`   - 🔊 Enhanced robotic modulation: 1.4x speed with digital effects`);
       }
 
       const response = await this.groq.audio.speech.create(ttsOptions);
@@ -147,7 +138,6 @@ export class GroqTTSService {
       const buffer = Buffer.from(await response.arrayBuffer());
       fs.writeFileSync(outputPath, buffer);
 
-      console.log(`✅ Groq TTS success: ${buffer.length} bytes (140 chars/second speed)`);
 
       // Convert to base64 for immediate use
       const base64Audio = buffer.toString('base64');

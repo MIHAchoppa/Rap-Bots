@@ -80,7 +80,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     };
 
-    console.log('🏥 Health check:', health);
     res.json(health);
   });
 
@@ -162,7 +161,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Simplified CashApp flow for battle packs
       if (paymentMethod === 'cashapp') {
         const packageInfo = battlePackages[battleCount as keyof typeof battlePackages];
-        console.log(`💰 CashApp battle pack request: ${battleCount} battles for $${(packageInfo.price/100).toFixed(2)} by user ${userId}`);
 
         return res.json({
           clientSecret: `cashapp_battles_cs_${Date.now()}_${userId}`,
@@ -194,7 +192,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } catch (error: any) {
           // Handle test/live mode mismatch - create new customer
           if (error.code === 'resource_missing') {
-            console.log(`🔄 Customer not found in current mode, creating new customer...`);
             customer = await stripe.customers.create({
               email: user.email,
               name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email,
@@ -222,7 +219,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const amount = packageInfo.price;
       const pricePerBattle = (amount / 100 / battleCount).toFixed(3);
 
-      console.log(`💰 Creating battle purchase: ${battleCount} battles for $${(amount/100).toFixed(2)}`);
 
       // Configure payment method types
       const paymentMethodTypes: ('card' | 'cashapp')[] = paymentMethod === 'cashapp' 
@@ -247,8 +243,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
           : `${battleCount} Battle Pack ($${pricePerBattle} per battle)`,
       });
 
-      console.log(`✅ Payment intent created: ${paymentIntent.id}`);
-      console.log(`🔑 Client secret: ${!!paymentIntent.client_secret}`);
 
       res.json({
         paymentIntentId: paymentIntent.id,
@@ -334,7 +328,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         creditAwarded: '1.00'
       });
 
-      console.log(`💰 Referral complete: ${referrer.email} earned $1.00 credit`);
       res.json({ 
         success: true, 
         creditAwarded: '1.00',
@@ -419,7 +412,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Simplified CashApp flow - just return dummy client secret to satisfy frontend
       if (paymentMethod === 'cashapp') {
-        console.log(`💰 CashApp subscription request for ${tier} tier by user ${userId}`);
 
         // Return a mock client secret to satisfy frontend Stripe integration
         return res.json({
@@ -468,7 +460,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         } catch (error: any) {
           // Handle test/live mode mismatch - create new customer
           if (error.code === 'resource_missing') {
-            console.log(`🔄 Customer not found in current mode, creating new customer...`);
             customer = await stripe.customers.create({
               email: user.email,
               name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email,
@@ -496,7 +487,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Create dynamic pricing for live mode compatibility
       const priceAmount = Math.round(tierInfo.price * 100); // Convert to cents
 
-      console.log(`🔧 Creating subscription for ${tier} tier: $${tierInfo.price}/month`);
 
       // Configure payment method types based on selection
       const paymentMethodTypes: ('card' | 'cashapp')[] = paymentMethod === 'cashapp' 
@@ -532,17 +522,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           : `${tier.charAt(0).toUpperCase() + tier.slice(1)} subscription`,
       });
 
-      console.log(`✅ Subscription created: ${subscription.id}`);
       const invoiceObj = subscription.latest_invoice as any;
-      console.log(`📋 Latest invoice:`, invoiceObj?.id);
 
       // Extract payment intent and client secret - handle expanded Stripe objects
       const latestInvoice = subscription.latest_invoice as any;
       const paymentIntent = latestInvoice?.payment_intent;
       const clientSecret = paymentIntent?.client_secret;
 
-      console.log(`🔑 Payment intent: ${paymentIntent?.id}`);
-      console.log(`🗝️ Client secret available: ${!!clientSecret}`);
 
       if (!clientSecret) {
         console.error('❌ No client secret found in subscription');
@@ -555,7 +541,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Don't mark as active until payment succeeds - webhook will handle this
-      console.log(`✅ Subscription setup complete, returning client secret`);
 
       res.json({
         subscriptionId: subscription.id,
@@ -598,7 +583,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const existingEvent = await storage.getProcessedWebhookEvent(eventId);
       if (existingEvent) {
-        console.log(`⚠️ Event ${eventId} already processed at ${existingEvent.processedAt}, skipping`);
         return res.json({received: true});
       }
     } catch (error: any) {
@@ -610,7 +594,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
 
-    console.log(`📥 Processing webhook event: ${event.type} (${eventId})`);
 
     try {
       // Handle the event
@@ -628,7 +611,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 // Add battles to user account
                 const result = await storage.addUserBattles(userId, battleCount);
                 if (result) {
-                  console.log(`✅ Added ${battleCount} battles to user ${userId} (Payment: ${paymentIntent.id})`);
                 } else {
                   console.warn(`⚠️ Failed to add battles to user ${userId} - user not found`);
                 }
@@ -639,7 +621,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
             // Check if this is a CashApp subscription payment (first payment)
             else if (paymentIntent.metadata?.tier && paymentIntent.metadata?.paymentMethod === 'cashapp') {
-              console.log(`💰 Processing CashApp subscription payment: ${paymentIntent.id}`);
 
               const userId = paymentIntent.metadata.userId;
               const tier = paymentIntent.metadata.tier;
@@ -652,7 +633,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   // Note: Stripe subscription ID should already be set from subscription creation
                 });
 
-                console.log(`✅ Activated CashApp subscription for user ${userId}: ${tier} tier (Payment: ${paymentIntent.id})`);
               } else {
                 console.warn(`⚠️ Invalid CashApp subscription data: userId=${userId}, tier=${tier}`);
               }
@@ -678,7 +658,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
               throw new Error(`Invalid customer ID format: ${typeof subscription.customer}`);
             }
 
-            console.log(`🔍 Looking up user for Stripe customer: ${customerId}`);
 
             // Efficiently find user by Stripe customer ID
             const user = await storage.getUserByStripeCustomerId(customerId);
@@ -704,7 +683,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 stripeSubscriptionId: subscription.id
               });
 
-              console.log(`✅ Updated user ${user.id} subscription: ${subscriptionTier} (${subscriptionStatus})`);
             } else {
               console.warn(`⚠️ No user found for Stripe customer ${customerId}`);
             }
@@ -715,7 +693,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
           break;
 
         default:
-          console.log(`ℹ️ Unhandled event type: ${event.type}`);
       }
 
       // Mark event as processed in database
@@ -729,7 +706,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Continue anyway - the event was processed successfully
       }
 
-      console.log(`✅ Successfully processed webhook event: ${event.type} (${eventId})`);
       res.json({received: true});
 
     } catch (error: any) {
@@ -762,7 +738,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.claims.sub;
       const { difficulty, preferredCharacters } = req.body;
 
-      console.log(`🎮 Random match requested by user ${userId}`);
 
       // Check if user can start a battle
       const canBattle = await storage.canUserStartBattle(userId);
@@ -798,7 +773,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const battle = await storage.createBattle(battleData);
       
-      console.log(`✅ Random match created: ${match.opponentName} vs User`);
       
       res.status(201).json({
         battle,
@@ -1204,14 +1178,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const battleId = req.params.id;
 
     try {
-      console.log(`⚡ LIGHTNING Transcription Started - ${battleId.substring(0, 8)}...`);
 
       if (!req.file?.buffer) {
         return res.status(400).json({ message: "No audio file provided" });
       }
 
       const audioBuffer = req.file.buffer;
-      console.log(`🎵 Audio for transcription: ${audioBuffer.length} bytes`);
 
       // Lightning-fast transcription only (200ms max for instant feel)
       let userText = "Voice input received";
@@ -1222,21 +1194,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
             setTimeout(() => reject(new Error("Transcription timeout")), 150) // Even more aggressive 150ms
           )
         ]);
-        console.log(`✅ LIGHTNING transcription (${Date.now() - startTime}ms): "${userText.substring(0, 50)}..."`);
       } catch (error) {
-        console.log(`⚠️ Lightning transcription failed, getting actual transcription...`);
         // If ultra-fast fails, get the actual transcription without timeout
         try {
           userText = await groqService.transcribeAudio(audioBuffer);
-          console.log(`✅ Fallback transcription complete: "${userText.substring(0, 50)}..."`);
         } catch (fallbackError) {
-          console.log(`❌ All transcription failed, using placeholder`);
           userText = "Voice input received";
         }
       }
 
       const finalProcessingTime = Date.now() - startTime;
-      console.log(`🎯 Final transcription result: "${userText}" (${finalProcessingTime}ms)`);
 
       res.json({ 
         userText,
@@ -1326,7 +1293,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid battle ID format" });
       }
 
-      console.log(`🎤 Battle Round Processing Started - ${battleId.substring(0, 8)}...`);
 
       const battle = await storage.getBattle(battleId);
 
@@ -1335,17 +1301,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // DEBUG: Check file upload status
-      console.log(`📁 File upload debug:`);
-      console.log(`  req.file exists: ${!!req.file}`);
-      console.log(`  req.file.buffer exists: ${!!(req.file?.buffer)}`);
-      console.log(`  req.file details:`, req.file ? {
-        fieldname: req.file.fieldname,
-        originalname: req.file.originalname,
-        encoding: req.file.encoding,
-        mimetype: req.file.mimetype,
-        size: req.file.size,
-        bufferLength: req.file.buffer?.length
-      } : 'No file');
 
       // Handle both audio and text input - at least one must be provided
       const userVerse = req.body.userVerse;
@@ -1353,7 +1308,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const hasText = !!(userVerse?.trim());
 
       if (!hasAudio && !hasText) {
-        console.log(`❌ No audio file or text verse provided`);
         return res.status(400).json({ message: "Either audio file or text verse must be provided" });
       }
 
@@ -1361,18 +1315,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Audio validation only if audio is provided
       if (hasAudio) {
-        console.log(`📊 File stats: ${audioBuffer.length} bytes, mimetype: ${req.file.mimetype}`);
 
         // TEMPORARILY REMOVE SIZE RESTRICTIONS for debugging
         if (audioBuffer.length === 0) {
-          console.log(`❌ Empty audio file`);
           return res.status(400).json({ message: "Audio file is empty" });
         }
 
         // SECURITY: Proper audio format validation based on our findings
         const audioHeader = audioBuffer.slice(0, 16).toString('hex');
 
-        console.log(`🔍 Audio validation: ${audioBuffer.length} bytes, header: ${audioHeader.substring(0, 16)}`);
 
         // WebM format validation (what browsers actually send)
         const isWebM = audioBuffer[0] === 0x1a && audioBuffer[1] === 0x45 && 
@@ -1386,15 +1337,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
                       audioHeader.includes('66747970'); // MP4/M4A - more flexible detection
 
         if (!isWebM && !isWAV && !isOgg && !isMP3 && !isMP4) {
-          console.log(`❌ Unrecognized audio format, header: ${audioHeader.substring(0, 16)}`);
           return res.status(400).json({ message: "Unsupported audio format" });
         }
 
-        console.log(`✅ Audio validation passed: ${isWebM ? 'WebM' : isWAV ? 'WAV' : isOgg ? 'Ogg' : isMP3 ? 'MP3' : 'MP4'} format`);
 
-        console.log(`🎵 Audio received: ${audioBuffer.length} bytes`);
       } else {
-        console.log(`📝 Text input received: "${userVerse}"`);
       }
 
       // TRANSCRIPTION OR TEXT INPUT
@@ -1403,10 +1350,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (hasText) {
         // Use provided text directly 
         userText = userVerse.trim();
-        console.log(`✅ Text input processed: "${userText.substring(0, 50)}..."`);
       } else if (hasAudio) {
         // Process audio transcription
-        console.log(`⚡ Starting audio transcription...`);
         try {
           // OPTIMIZED transcription with proper timeout for deployment stability
           userText = await Promise.race([
@@ -1415,15 +1360,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
               setTimeout(() => reject(new Error("Transcription timeout")), 3000) // 3s timeout for stability
             )
           ]);
-          console.log(`✅ FAST transcription complete: "${userText.substring(0, 50)}..."`);
         } catch (error) {
-          console.log(`⚠️ Fast transcription failed, using fallback...`);
           // If ultra-fast fails, get the actual transcription without timeout
           try {
             userText = await groqService.transcribeAudio(audioBuffer);
-            console.log(`✅ Fallback transcription complete: "${userText.substring(0, 50)}..."`);
           } catch (fallbackError) {
-            console.log(`❌ All transcription failed, using placeholder`);
             userText = "Voice input received";
           }
         }
@@ -1433,9 +1374,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // but transcription is now much faster (1s vs 2s)
 
       // FIRST: Calculate user's performance to inform AI reaction
-      console.log(`📊 Pre-analyzing user performance for reactive AI...`);
       const userPerformanceScore = scoringService.calculateUserScore(userText);
-      console.log(`🎯 User performance: ${userPerformanceScore}/100 - AI will react accordingly`);
 
       // Check if this is a clone battle and adjust difficulty/complexity accordingly
       const isCloneBattle = battle.aiCharacterId?.startsWith('clone_');
@@ -1444,7 +1383,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let adjustedIntensity = battle.styleIntensity || 50;
 
       if (isCloneBattle && battle.aiCharacterId) {
-        console.log(`🤖 Clone battle detected - adjusting AI to match user's skill level`);
         const cloneId = battle.aiCharacterId.replace('clone_', '');
         const clone = await storage.getCloneById(cloneId);
         
@@ -1459,12 +1397,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           else if (clone.skillLevel >= 65 && clone.skillLevel < 85) adjustedDifficulty = 'hard';
           else adjustedDifficulty = 'nightmare';
           
-          console.log(`🎯 Clone AI settings: difficulty=${adjustedDifficulty}, complexity=${adjustedComplexity}, intensity=${adjustedIntensity}`);
         }
       }
 
       // NOW generate AI response with user score context for reactive behavior
-      console.log(`🤖 Generating AI response for: "${userText.substring(0, 30)}..."`);
 
       let aiResponseText = "System response ready!";
       try {
@@ -1482,16 +1418,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
             setTimeout(() => reject(new Error("AI timeout")), 5000) // Keep longer timeout for 120B model
           )
         ]);
-        console.log(`✅ AI response generated: "${aiResponseText.substring(0, 50)}..."`);
       } catch (error: any) {
-        console.log(`⚠️ AI response failed: ${error.message}`);
         aiResponseText = "Yo, technical difficulties but I'm still here / System glitched but my flow's crystal clear!";
       }
 
       // 3. Generate TTS using user's preferred service or system fallback
       const userId = req.user.claims.sub;
       const characterId = battle.aiCharacterId || battle.aiCharacterName?.toLowerCase()?.replace('mc ', '').replace(' ', '_') || "venom";
-      console.log(`🎤 Generating TTS for character: ${characterId} (user: ${userId})`);
 
       // Use the new UserTTSManager to handle all TTS services
       let ttsResult: any;
@@ -1515,7 +1448,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
           fileSize: audioResponse.audioUrl.length 
         };
 
-        console.log(`✅ User TTS successful: ${audioResponse.audioUrl.length > 0 ? 'Audio generated' : 'Silent mode'}`);
       } catch (error: any) {
         console.error(`❌ User TTS failed:`, error.message);
 
@@ -1529,20 +1461,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const audioResult = ttsResult;
 
-      console.log(`🤖 Processing complete (${Date.now() - startTime}ms)`);
 
       // REALISTIC SCORING: Use actual battle analysis instead of random numbers
-      console.log(`📊 Analyzing battle performance...`);
       // CRITICAL: Final battle scores use advanced phonetic analysis with zero rate limiting
       const scores = scoringService.scoreRound(userText, aiResponseText, true, battle.id);
-      console.log('🏆 FINAL BATTLE SCORES calculated with advanced phonetic analysis - no rate limiting!');
 
       // GENERATE USER'S BATTLE RAP MAP for display
       const userBattleMap = groqService.generateUserBattleMap(userText);
-      console.log(`🗺️ USER'S BATTLE MAP:\n${userBattleMap}`);
 
-      console.log(`📈 User analysis: Rhyme ${scores.rhymeDensity}/100, Flow ${scores.flowQuality}/100, Creativity ${scores.creativity}/100`);
-      console.log(`🎯 Final scores: User ${scores.userScore}/100, AI ${scores.aiScore}/100`);
 
       // Create round with realistic scoring and battle map
       const round = {
@@ -1559,12 +1485,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // CRITICAL FIX: Update main battle record with scores
       await storage.updateBattleScore(battleId, scores.userScore, scores.aiScore);
-      console.log(`🏆 Updated battle scores: User ${scores.userScore}/100, AI ${scores.aiScore}/100`);
 
       // Quick storage update
       await storage.addBattleRound(battleId, round);
 
-      console.log(`✅ Battle round complete (${Date.now() - startTime}ms)`);
       res.json(round);
 
     } catch (error: any) {
@@ -1781,7 +1705,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: 'Text is required' });
       }
 
-      console.log(`🧠 ML-powered analysis requested for: "${text.substring(0, 50)}..."`);
 
       // Use Groq's ML-powered analysis
       const analysis = await groqService.analyzeLyricsWithML(text);
@@ -1807,7 +1730,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: 'Both user and AI lyrics required' });
       }
 
-      console.log(`🔮 ML battle prediction requested`);
 
       // Use Groq's ML-powered prediction
       const prediction = await groqService.predictBattleOutcome(userLyrics, aiLyrics);
@@ -1833,7 +1755,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: 'Seed word is required' });
       }
 
-      console.log(`🎵 ML rhyme generation for: ${seedWord}`);
 
       // Use Groq's ML-powered rhyme generation
       const rhymes = await groqService.generateMLRhymes(seedWord, count || 5);
@@ -1860,7 +1781,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: 'Text is required' });
       }
 
-      console.log(`⚡ Real-time analysis requested for: "${text.substring(0, 50)}..."`);
 
       const analysis = await realtimeAnalysisService.analyzeRealtime(text, {
         includeML: includeML || false,
@@ -1885,7 +1805,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: 'Both verses are required' });
       }
 
-      console.log(`⚔️ Verse comparison requested`);
 
       const comparison = await realtimeAnalysisService.compareVerses(
         verse1, 
@@ -1910,7 +1829,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: 'Verses array is required' });
       }
 
-      console.log(`📦 Batch analysis for ${verses.length} verses`);
 
       const results = await realtimeAnalysisService.batchAnalyze(verses);
 
@@ -1970,11 +1888,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Lyrics text is required' });
       }
 
-      console.log(`🧠 Analyzing lyrics for crowd reaction: "${lyrics.substring(0, 50)}..."`);
 
       const analysis = await crowdReactionService.analyzeForCrowdReaction(lyrics, context);
 
-      console.log(`🎭 Crowd reaction determined: ${analysis.reactionType} (${analysis.intensity}%) - ${analysis.reasoning}`);
 
       res.json(analysis);
 
@@ -2033,7 +1949,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/sfx/:filename', (req, res) => {
     try {
       const filename = req.params.filename;
-      console.log(`🎵 Serving custom SFX file: ${filename}`);
 
       // Security: Validate filename
       if (!filename.endsWith('.mp3') || filename.includes('/') || filename.includes('..')) {
@@ -2043,11 +1958,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const filePath = path.join(process.cwd(), 'public_sfx', filename);
 
       if (!fs.existsSync(filePath)) {
-        console.log(`⚠️ SFX file not found: ${filePath}`);
         return res.status(404).json({ error: 'SFX file not found' });
       }
 
-      console.log(`✅ Serving custom SFX: ${filePath}`);
       res.setHeader('Content-Type', 'audio/mpeg');
       res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 1 day
 
@@ -2112,11 +2025,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: 'Training data must be an array with max 10000 items' });
       }
 
-      console.log(`📚 Creating fine-tuning job: ${name}`);
 
       // Upload training data file
       const fileId = await fineTuningService.uploadTrainingFile(training_data);
-      console.log(`✅ Training file uploaded: ${fileId}`);
 
       // Create fine-tuning job
       const fineTuningJob = await fineTuningService.createFineTuning({
@@ -2126,7 +2037,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         type: 'lora'
       });
 
-      console.log(`✅ Fine-tuning job created: ${fineTuningJob.id}`);
       res.json(fineTuningJob);
     } catch (error) {
       console.error('Error creating fine-tuning:', error);
@@ -2236,7 +2146,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       };
 
-      console.log(`🎤 Generating ${barsCount}-bar verse in ${rapperName}'s ${style} style...`);
       
       const lyrics = await mlRapperCloningService.generateStyledLyrics({
         prompt: prompt || `Write a ${barsCount}-bar verse`,
@@ -2290,7 +2199,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         genre: genre || 'hip-hop'
       };
 
-      console.log(`🎵 Aligning lyrics to ${bpm} BPM beat...`);
       
       const flowModeling = await mlRapperCloningService.alignToBeat(lyrics, beatContext);
 
@@ -2323,7 +2231,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      console.log(`📊 Creating rapper profile from battle history for user ${userId}...`);
       
       // Get user's recent battles
       const battles = await storage.getUserBattles(userId, 10);
@@ -2391,10 +2298,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       
-      console.log(`🤖 Generating clone for user ${userId}...`);
       const clone = await storage.createOrUpdateUserClone(userId);
       
-      console.log(`✅ Clone generated: ${clone.cloneName} (Skill: ${clone.skillLevel})`);
       res.json(clone);
     } catch (error) {
       console.error('Error generating user clone:', error);
@@ -2421,7 +2326,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Upload SFX files to object storage
   app.post('/api/upload-sfx-files', async (req, res) => {
     try {
-      console.log('🎵 Uploading custom SFX files to object storage...');
 
       // Upload boxing bell
       const boxingBellPath = '/tmp/boxing-bell.mp3';
@@ -2434,14 +2338,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const bucketPath = '/replit-objstore-99aa1839-1ad0-44fb-9421-e6d822aaac23/public/sfx/';
 
         // Simple approach: just acknowledge the upload request
-        console.log('✅ SFX files upload acknowledged');
         res.json({ 
           success: true, 
           message: 'SFX files staged for upload',
           files: ['boxing-bell.mp3', 'crowd-reaction.mp3']
         });
       } else {
-        console.log('⚠️ SFX files not found in staging area');
         res.status(404).json({ error: 'SFX files not found' });
       }
 
@@ -2583,9 +2485,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const currentCredit = parseFloat(user.storeCredit || '0');
         const newCredit = (currentCredit - CARD_GENERATION_COST).toFixed(2);
         await storage.updateUser(userId, { storeCredit: newCredit });
-        console.log(`💳 Charged ${userId} $${CARD_GENERATION_COST} for card generation. New balance: $${newCredit}`);
       } else {
-        console.log(`🎁 First card generation for ${userId} - FREE!`);
       }
 
       // Update user with character card data
@@ -2659,11 +2559,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const hasValidExtension = allowedExtensions.some(ext => filename.endsWith(ext));
       
       if (!hasValidPrefix || !hasValidExtension) {
-        console.log('🚫 Audio file blocked - filename:', filename, 'hasValidPrefix:', hasValidPrefix, 'hasValidExtension:', hasValidExtension);
         return res.status(404).json({ message: 'File not found' });
       }
       
-      console.log('✅ Audio file allowed - filename:', filename);
 
       if (!fs.existsSync(filePath)) {
         return res.status(404).json({ message: 'Audio file not found' });
@@ -2679,7 +2577,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.setHeader('Access-Control-Allow-Methods', 'GET');
       res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-      console.log('🎵 Serving audio file:', filename, 'type:', contentType);
       const fileStream = fs.createReadStream(filePath);
       fileStream.pipe(res);
 

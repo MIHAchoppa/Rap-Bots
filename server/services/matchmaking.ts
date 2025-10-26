@@ -30,7 +30,6 @@ export class MatchmakingService {
   ];
 
   async findRandomMatch(options: MatchmakingOptions): Promise<RandomMatch> {
-    console.log(`🎮 Finding random match for user ${options.userId}...`);
 
     // Clean up old queue entries
     this.cleanupQueue();
@@ -39,7 +38,6 @@ export class MatchmakingService {
     const userStats = await storage.getUserStats(options.userId);
     const userSkillLevel = this.calculateSkillLevel(userStats);
 
-    console.log(`📊 User skill level: ${userSkillLevel}`);
 
     // Select random opponent based on user skill and preferences
     const opponent = this.selectRandomOpponent(options, userSkillLevel);
@@ -54,7 +52,6 @@ export class MatchmakingService {
       styleIntensity: this.calculateIntensity(opponent.difficulty),
     };
 
-    console.log(`✅ Random match found: ${match.opponentName} (${match.difficulty})`);
 
     return match;
   }
@@ -158,7 +155,6 @@ export class MatchmakingService {
 
   // Queue a user for matchmaking (for future PvP features)
   async queueForMatch(options: MatchmakingOptions): Promise<void> {
-    console.log(`📥 Adding user ${options.userId} to matchmaking queue...`);
     
     this.matchQueue.set(options.userId, {
       userId: options.userId,
@@ -166,7 +162,6 @@ export class MatchmakingService {
       options,
     });
 
-    console.log(`✅ User queued. Queue size: ${this.matchQueue.size}`);
   }
 
   // Check if a match is available (for future PvP features)
@@ -194,7 +189,6 @@ export class MatchmakingService {
   // Cancel matchmaking
   cancelMatchmaking(userId: string): void {
     this.matchQueue.delete(userId);
-    console.log(`❌ User ${userId} cancelled matchmaking`);
   }
 }
 

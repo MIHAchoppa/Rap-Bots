@@ -171,7 +171,6 @@ Return analysis in this JSON format:
       const reasoning = result.choices?.[0]?.message?.reasoning;
       const content = result.choices?.[0]?.message?.content;
       
-      console.log('Reasoning process:', reasoning);
       
       if (content) {
         return JSON.parse(content);

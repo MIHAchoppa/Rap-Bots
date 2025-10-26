@@ -33,14 +33,12 @@ export class RealtimeAnalysisService {
       battleId?: string;
     } = {}
   ): Promise<RealtimeAnalysisResult> {
-    console.log(`⚡ Real-time analysis starting for: "${text.substring(0, 50)}..."`);
 
     const cacheKey = `${text}_${options.includeML}_${options.isFinalScore}`;
     
     // Check cache
     const cached = this.analysisCache.get(cacheKey);
     if (cached && Date.now() - cached.timestamp < this.CACHE_TTL) {
-      console.log(`✅ Using cached analysis`);
       return cached;
     }
 
@@ -80,12 +78,9 @@ export class RealtimeAnalysisService {
     // Add ML insights if requested (slower but more detailed)
     if (options.includeML) {
       try {
-        console.log(`🧠 Adding ML insights...`);
         const mlAnalysis = await groqService.analyzeLyricsWithML(text);
         result.mlInsights = mlAnalysis;
-        console.log(`✅ ML insights added: ${mlAnalysis.complexity}/100 complexity`);
       } catch (error) {
-        console.log(`⚠️ ML insights failed, continuing without them`);
       }
     }
 
@@ -95,7 +90,6 @@ export class RealtimeAnalysisService {
     // Clean up old cache entries
     this.cleanupCache();
 
-    console.log(`✅ Real-time analysis complete: Score ${score}/100`);
     
     return result;
   }
@@ -183,13 +177,11 @@ export class RealtimeAnalysisService {
    * Batch analyze multiple verses for comparison
    */
   async batchAnalyze(verses: string[]): Promise<RealtimeAnalysisResult[]> {
-    console.log(`📦 Batch analyzing ${verses.length} verses...`);
     
     const results = await Promise.all(
       verses.map(verse => this.analyzeRealtime(verse, { includeML: false }))
     );
 
-    console.log(`✅ Batch analysis complete`);
     return results;
   }
 
@@ -207,7 +199,6 @@ export class RealtimeAnalysisService {
     margin: number;
     reasoning: string[];
   }> {
-    console.log(`⚔️ Comparing two verses...`);
 
     const [analysis1, analysis2] = await Promise.all([
       this.analyzeRealtime(verse1, { includeML }),
@@ -246,7 +237,6 @@ export class RealtimeAnalysisService {
       }
     }
 
-    console.log(`✅ Comparison complete: ${winner} wins by ${Math.abs(scoreDiff)} points`);
 
     return {
       verse1Analysis: analysis1,
@@ -274,7 +264,6 @@ export class RealtimeAnalysisService {
    */
   clearCache() {
     this.analysisCache.clear();
-    console.log(`🧹 Real-time analysis cache cleared`);
   }
 }
 

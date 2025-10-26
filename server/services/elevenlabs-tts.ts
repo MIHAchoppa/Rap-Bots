@@ -143,7 +143,6 @@ export class ElevenLabsTTSService {
     // Final fallback to character's preferred voice ID
     const voiceId = selectedVoice?.voice_id || charPrefs.fallbackVoiceId;
     
-    console.log(`🎤 ElevenLabs voice mapping for ${characterId}: ${selectedVoice?.name || 'fallback'} (${voiceId})`);
     
     // Cache the result
     this.voiceCache.set(cacheKey, voiceId);
@@ -235,7 +234,6 @@ export class ElevenLabsTTSService {
       const suffix = robotSuffixes[Math.floor(Math.random() * robotSuffixes.length)];
       
       processedText = `${prefix} ${processedText} ${suffix}`;
-      console.log(`🤖 CYPHER-9000 ElevenLabs: Applied robotic speech patterns with breath control`);
     }
 
     return processedText;
@@ -283,13 +281,11 @@ export class ElevenLabsTTSService {
       speedMultiplier?: number;
     } = {}
   ): Promise<{ audioUrl: string; duration: number }> {
-    console.log(`🎤 ElevenLabs TTS generating for ${characterId}: "${text.substring(0, 50)}..."`);
     
     try {
       const voiceId = await this.getVoiceForCharacter(characterId, options.gender);
       const voiceStyle = options.voiceStyle || 'confident';
       
-      console.log(`🚀 Using ElevenLabs voice ID: ${voiceId} with style: ${voiceStyle}`);
       
       // Apply character-specific speech effects with breath patterns
       const processedText = this.applyCharacterSpeechEffects(text, characterId, voiceStyle);
@@ -306,11 +302,9 @@ export class ElevenLabsTTSService {
         speed: rapSpeed           // Native speed control for perfect pacing
       };
 
-      console.log(`🎯 ElevenLabs voice settings: stability=${voiceSettings.stability}, similarity=${voiceSettings.similarityBoost}, style=${voiceSettings.style}, speed=${voiceSettings.speed}x`);
 
       // Select optimal model for battle rap (Turbo for speed, Multilingual for quality)
       const modelId = this.useTurboModel ? "eleven_turbo_v2_5" : "eleven_multilingual_v2";
-      console.log(`⚡ Using ${modelId} model for ${this.useTurboModel ? 'ultra-fast' : 'high-quality'} generation`);
 
       // Generate speech with ElevenLabs API
       const audioResponse = await this.elevenlabs.textToSpeech.convert(voiceId, {
@@ -342,7 +336,6 @@ export class ElevenLabsTTSService {
       const buffer = Buffer.concat(chunks);
       fs.writeFileSync(outputPath, buffer);
 
-      console.log(`✅ ElevenLabs TTS success: ${buffer.length} bytes with ${rapSpeed}x speed and breath patterns`);
 
       // Convert to base64 for immediate use
       const base64Audio = buffer.toString('base64');
@@ -431,7 +424,6 @@ export class ElevenLabsTTSService {
         rules: rapPronunciationRules
       });
 
-      console.log(`✅ Created pronunciation dictionary: ${response.id}`);
       return response.id;
     } catch (error: any) {
       console.error('❌ Failed to create pronunciation dictionary:', error.message);
@@ -444,7 +436,6 @@ export class ElevenLabsTTSService {
    */
   setPronunciationDictionary(dictId: string) {
     this.pronunciationDictId = dictId;
-    console.log(`📖 Pronunciation dictionary set: ${dictId}`);
   }
 }
 

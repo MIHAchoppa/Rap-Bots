@@ -53,7 +53,6 @@ export class CharacterCardGenerator {
     userStats: { totalBattles: number; totalWins: number }
   ): Promise<{ cardUrl: string; cardData: CharacterCardData }> {
     try {
-      console.log(`🎨 Generating character card for user ${userName}...`);
 
       // Generate attacks based on rap style and bio
       const attacks = this.generateAttacks(rapStyle, bio);
@@ -243,7 +242,6 @@ export class CharacterCardGenerator {
       // Return relative URL path
       const relativeUrl = `/api/character-cards/${userId}_${timestamp}.png`;
       
-      console.log(`✅ Character card image saved: ${relativeUrl}`);
       return relativeUrl;
     } catch (error) {
       console.error("Error generating card image:", error);

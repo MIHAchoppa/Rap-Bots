@@ -40,7 +40,6 @@ app.use((req, res, next) => {
 (async () => {
   // Production environment validation
   if (process.env.NODE_ENV === 'production') {
-    console.log('🚀 Production deployment detected');
     
     // Validate critical environment variables
     const requiredEnvVars = ['DATABASE_URL', 'SESSION_SECRET', 'REPL_ID'];
@@ -50,13 +49,11 @@ app.use((req, res, next) => {
       console.error('❌ Missing required environment variables:', missingVars);
       console.error('💡 Set these in your deployment environment');
     } else {
-      console.log('✅ Required environment variables present');
     }
     
     // Check optional AI service keys
     const hasGroq = !!process.env.GROQ_API_KEY;
     const hasOpenAI = !!process.env.OPENAI_API_KEY;
-    console.log(`🤖 AI Services: Groq ${hasGroq ? '✅' : '❌'}, OpenAI ${hasOpenAI ? '✅' : '❌'}`);
     
     if (!hasGroq && !hasOpenAI) {
       console.warn('⚠️ No AI service keys found - app functionality will be limited');

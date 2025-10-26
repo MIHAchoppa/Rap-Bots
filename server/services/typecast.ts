@@ -17,9 +17,6 @@ export class TypecastService {
     const { getCharacterById } = await import("@shared/characters");
     const character = getCharacterById(characterId);
     const voiceId = character?.voiceId || "tc_a4b8f31d52e8763a1234567f"; // fallback to working voice
-    console.log("Attempting Typecast TTS generation for text:", text.substring(0, 50) + "...");
-    console.log(`Character: ${character?.name || 'Unknown'} (${character?.gender || 'unknown'})`);
-    console.log(`Character ID: ${characterId}, Voice ID: ${voiceId}`);
     
     try {
 
@@ -54,13 +51,11 @@ export class TypecastService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.log("TTS generation failed:", response.status, errorText);
         throw new Error(`TTS generation failed: ${response.status} ${errorText}`);
       }
 
       // According to the docs, this should return binary audio data
       const audioBuffer = await response.arrayBuffer();
-      console.log("Generated audio size:", audioBuffer.byteLength, "bytes");
       
       // Convert to base64 data URL for embedding
       const base64Audio = Buffer.from(audioBuffer).toString('base64');
