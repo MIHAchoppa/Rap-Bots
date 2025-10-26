@@ -1,6 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { validateEnvironment } from "./envValidation";
 import path from "path";
 
 const app = express();
@@ -38,29 +39,20 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // Production environment validation
-  if (process.env.NODE_ENV === 'production') {
-    console.log('🚀 Production deployment detected');
-    
-    // Validate critical environment variables
-    const requiredEnvVars = ['DATABASE_URL', 'SESSION_SECRET', 'REPL_ID'];
-    const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
-    
-    if (missingVars.length > 0) {
-      console.error('❌ Missing required environment variables:', missingVars);
-      console.error('💡 Set these in your deployment environment');
-    } else {
-      console.log('✅ Required environment variables present');
-    }
-    
-    // Check optional AI service keys
-    const hasGroq = !!process.env.GROQ_API_KEY;
-    const hasOpenAI = !!process.env.OPENAI_API_KEY;
-    console.log(`🤖 AI Services: Groq ${hasGroq ? '✅' : '❌'}, OpenAI ${hasOpenAI ? '✅' : '❌'}`);
-    
-    if (!hasGroq && !hasOpenAI) {
-      console.warn('⚠️ No AI service keys found - app functionality will be limited');
-    }
+  // Validate environment variables
+  const validation = validateEnvironment();
+  
+  // In production, stop if there are critical errors
+  if (!validation.valid && process.env.NODE_ENV === 'production') {
+    console.error('\n❌ Cannot start server due to configuration errors');
+    console.error('📖 See SETUP_GUIDE.md for setup instructions');
+    process.exit(1);
+  }
+  
+  // In development, warn but continue
+  if (!validation.valid) {
+    console.warn('\n⚠️  Server starting with configuration warnings');
+    console.warn('Some features may not work correctly');
   }
 
   // Serve static assets from attached_assets directory
