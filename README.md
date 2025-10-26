@@ -38,5 +38,18 @@ To get started with the Rap Bots project, follow these steps:
 
 ## Additional Resources
 - **[Tokenomics](./TOKENOMICS.md)**: Learn about the $SHELL token that powers the MyShell ecosystem.
+- **[Complete System Documentation](./COMPLETE_SYSTEM_DOCUMENTATION.md)**: Comprehensive guide to the Clone System, Training System, and SEO optimization.
+- **[Production Deployment Guide](./PRODUCTION_DEPLOYMENT_GUIDE.md)**: Instructions for deploying the application to production.
+
+## Development & Scaling Resources
+
+### For Development Teams
+If you're working on scaling and debugging this application with multiple agents/developers, see:
+
+- **[📋 Agent Debugging & Scaling Plan](./AGENT_DEBUGGING_SCALING_PLAN.md)**: Comprehensive strategy for three specialized agents to fully scale, polish, and debug the application
+- **[✅ Agent Task Assignments](./AGENT_TASK_ASSIGNMENTS.md)**: Quick reference guide for task division between Frontend, Backend, and Infrastructure specialists
+- **[🔄 Agent Workflow Map](./AGENT_WORKFLOW_MAP.md)**: Visual workflow diagrams and communication strategies for coordinated development
+
+These documents provide a complete roadmap for systematically debugging, optimizing, and scaling the Rap Bots platform with clear separation of concerns and coordination strategies.
 
 We hope you enjoy using Rap Bots!
