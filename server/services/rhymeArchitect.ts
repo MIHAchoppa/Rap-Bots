@@ -125,11 +125,9 @@ export class RhymeArchitectService {
     impactMoments: ImpactMoment[];
     timingInstructions: string;
   }> {
-    console.log(`🎯 RHYME ARCHITECT: Optimizing for ${targetImpact} impact...`);
     
     // DYNAMIC FORMULA SELECTION: Choose the perfect formula for the situation
     const selectedFormula = this.selectOptimalFormula(lyrics, targetImpact, audienceType);
-    console.log(`🔥 SELECTED FORMULA: ${selectedFormula.name} - ${selectedFormula.description}`);
     
     const lines = lyrics.split('\n').filter(line => line.trim());
     const optimizedLines: string[] = [];
@@ -318,7 +316,6 @@ export class RhymeArchitectService {
     // Use selected formula for strategic positioning or fallback to default
     const selectedFormula = formula || this.impactFormulas.classicBattle;
     
-    console.log(`🎯 Using formula: ${selectedFormula.name} for impact positioning`);
     
     // Apply formula-specific quarter marks for maximum crowd reaction
     for (const quarterMark of selectedFormula.quarterMarks) {
@@ -334,7 +331,6 @@ export class RhymeArchitectService {
       positions.push(endPosition);
     }
     
-    console.log(`🔥 Impact positions calculated: [${positions.join(', ')}] using ${selectedFormula.name}`);
     
     return positions.filter(pos => pos >= 0 && pos < syllableAnalysis.totalSyllables);
   }

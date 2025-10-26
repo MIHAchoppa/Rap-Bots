@@ -51,7 +51,6 @@ export class ContentModerationService {
       const result = await response.json();
       const moderationOutput = result.choices[0]?.message?.content?.trim() || '';
       
-      console.log(`Content moderation result: "${moderationOutput}"`);
 
       if (moderationOutput.toLowerCase().startsWith('safe')) {
         return { isSafe: true };

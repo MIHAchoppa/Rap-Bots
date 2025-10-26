@@ -59,9 +59,6 @@ export class ComprehensiveRhymeFamilyTracker {
     progression.familyEvolution.push(familySnapshot);
 
     if (isFinalScore) {
-      console.log(`🎯 Battle ${battleId.substring(0, 8)} family tracking: ${battleFamilies.size} families across ${progression.rounds} rounds`);
-      console.log(`🎯 Family evolution: ${progression.familyEvolution.join(' → ')}`);
-      console.log(`🎯 Round complexity scores: ${progression.roundScores.join(', ')}`);
     }
 
     // Clean old battle data (keep last 10 battles)

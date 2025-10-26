@@ -21,7 +21,6 @@ export class GroqService {
         console.warn("⚠️ GROQ_API_KEY not provided - Groq services will be unavailable");
       }
     } else {
-      console.log("✅ Groq API service configured");
     }
     this.rhymeEngine = new AdvancedRhymeEngine();
     this.rhymeArchitect = new RhymeArchitectService();
@@ -33,7 +32,6 @@ export class GroqService {
       throw new Error("Groq API key not available");
     }
     
-    console.log(`🎙️ Groq transcription starting: ${audioBuffer.length} bytes`);
     
     try {
       const formData = new FormData();
@@ -45,7 +43,6 @@ export class GroqService {
       formData.append("language", "en"); // Skip language detection for speed
       formData.append("prompt", "rap battle verse lyrics"); // Guide recognition
 
-      console.log(`📤 Sending to Groq transcription API...`);
       
       const response = await fetch(`${this.baseUrl}/audio/transcriptions`, {
         method: "POST",
@@ -55,14 +52,11 @@ export class GroqService {
         body: formData,
       });
 
-      console.log(`📥 Groq response status: ${response.status} ${response.statusText}`);
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.log(`❌ Groq transcription error: ${errorText}`);
         
         // If webm fails, try as wav
-        console.log(`🔄 Retrying with WAV format...`);
         const formData2 = new FormData();
         const audioBlob2 = new Blob([audioBuffer], { type: "audio/wav" });
         formData2.append("file", audioBlob2, "audio.wav");
@@ -79,17 +73,14 @@ export class GroqService {
 
         if (!response2.ok) {
           const errorText2 = await response2.text();
-          console.log(`❌ Second attempt failed: ${errorText2}`);
           throw new Error(`Invalid audio format`);
         }
 
         const result2 = await response2.json();
-        console.log(`✅ Transcription successful (WAV): "${result2.text.substring(0, 50)}..."`);
         return result2.text;
       }
 
       const result = await response.json();
-      console.log(`✅ Transcription successful (WebM): "${result.text.substring(0, 50)}..."`);
       return result.text;
     } catch (error) {
       console.error(`💥 Transcription error:`, error);
@@ -306,7 +297,6 @@ OUTPUT: Technical brief for AI rapper in format: "User: [syllables/line], [schem
       const choice = result.choices?.[0];
       
       if (choice?.message?.content) {
-        console.log("🎯 Rhyme analysis completed:", choice.message.content.substring(0, 100) + "...");
         return choice.message.content;
       }
       
@@ -334,7 +324,6 @@ OUTPUT: Technical brief for AI rapper in format: "User: [syllables/line], [schem
     const sanitizedUserVerse = this.sanitizeContent(validatedUserVerse);
     
     // STAGE 1: ADVANCED RHYME ANALYSIS
-    console.log("🎯 Stage 1: Analyzing user's rhyme patterns...");
     const rhymeAnalysis = await this.analyzeRhymePatterns(sanitizedUserVerse);
 
     // REACTIVE AI: Adjust aggression based on user performance
@@ -347,18 +336,14 @@ OUTPUT: Technical brief for AI rapper in format: "User: [syllables/line], [schem
       aggressionBoost = 75; // Maximum aggression boost
       lyricComplexity = Math.max(lyricComplexity, 95); // Force near-maximum complexity
       styleIntensity = Math.max(styleIntensity, 90); // Force high intensity
-      console.log(`🤖 CYPHER-9000 PROTOCOL ACTIVATED - SYSTEMATIC LYRICAL TERMINATION INITIATED`);
     } else if (userScore >= 70) {
       reactionMode = "ABSOLUTELY NUTS";
       aggressionBoost = 50;
-      console.log(`🔥 USER SCORED HIGH (${userScore}) - AI GOING ABSOLUTELY NUTS!`);
     } else if (userScore >= 50) {
       reactionMode = "significantly aggressive";
       aggressionBoost = 25;
-      console.log(`⚡ USER SCORED DECENT (${userScore}) - AI INCREASING AGGRESSION`);
     } else {
       reactionMode = "mildly superior";
-      console.log(`😏 USER SCORED LOW (${userScore}) - AI SHOWING MILD SUPERIORITY`);
     }
     
     const difficultyPrompts = {
@@ -376,7 +361,6 @@ OUTPUT: Technical brief for AI rapper in format: "User: [syllables/line], [schem
     };
 
     // Content Safety Level - AI-Powered Moderation
-    console.log("Content safety level:", profanityFilter ? "STRICT (family-friendly)" : "MODERATE (battle rap appropriate)");
     
     const safetyNote = profanityFilter 
       ? `CONTENT SAFETY: Keep ALL language family-friendly and clean. Use creative wordplay, clever metaphors, and skill-based competitive insults without any offensive content. Focus on technical rap mastery and lyrical creativity.
@@ -420,7 +404,6 @@ Battle rap techniques encouraged:
       : "ABSOLUTE SAVAGE MODE: Go completely nuts with devastating attacks. Use the most brutal, overwhelming verbal assault. Show zero mercy and total domination. React with exponential aggression and technical superiority.";
 
     // STAGE 2: ENHANCED RAP GENERATION using rhyme analysis
-    console.log("🎤 Stage 2: Generating enhanced response using rhyme intelligence...");
     
     const prompt = `You are a legendary rap battle MC with mastery of every rap technique. The challenger just delivered:
 
@@ -788,7 +771,6 @@ ${difficulty === 'nightmare' ? '- CYPHER-9000 MODE: Cold robotic delivery with s
 
     const result = await apiResponse.json();
     // SECURITY: Only log essential info, never expose reasoning or full content
-    console.log("Groq API Status:", result.choices?.[0]?.finish_reason || "unknown", "Model:", result.model || "unknown");
     
     if (!result.choices || result.choices.length === 0) {
       throw new Error(`Groq API returned no choices: ${JSON.stringify(result)}`);
@@ -809,12 +791,10 @@ ${difficulty === 'nightmare' ? '- CYPHER-9000 MODE: Cold robotic delivery with s
         const baseResponse = choice?.message?.content || choice?.message?.reasoning || "";
         return this.blendResponses(baseResponse.trim(), enhancedVerse);
       } catch (error) {
-        console.log("Advanced rhyme enhancement failed, using base response:", error);
       }
     }
 
     // STAGE 3: RHYME ARCHITECT OPTIMIZATION for perfect syllable placement
-    console.log("🎯 Stage 3: Rhyme Architect optimizing syllable placement for maximum impact...");
     
     // Enhanced 120B model response processing - filter out reasoning
     let rapResponse = "";
@@ -822,7 +802,6 @@ ${difficulty === 'nightmare' ? '- CYPHER-9000 MODE: Cold robotic delivery with s
     
     if (rawContent && rawContent.trim()) {
       // 120B model puts both reasoning and content together - need to separate
-      console.log("Processing 120B model output with reasoning filter");
       
       // Split content by lines and filter out reasoning text
       const lines = rawContent.split('\n');
@@ -855,7 +834,6 @@ ${difficulty === 'nightmare' ? '- CYPHER-9000 MODE: Cold robotic delivery with s
       if (rapLines.length >= 4) {
         const validatedLines = this.validateRhymeSwitching(rapLines.slice(0, 8));
         rapResponse = this.sanitizeContent(validatedLines.join('\n'));
-        console.log(`Extracted ${rapLines.length} clean rap lines with security validation`);
       } else {
         // Fallback: use all non-reasoning content
         const cleanLines = lines.filter((line: string) => {
@@ -866,16 +844,13 @@ ${difficulty === 'nightmare' ? '- CYPHER-9000 MODE: Cold robotic delivery with s
         
         if (cleanLines.length >= 4) {
           rapResponse = cleanLines.slice(0, 8).join('\n');
-          console.log("Using fallback clean content extraction");
         } else {
           // Emergency fallback: use raw content but warn
           rapResponse = rawContent.trim();
-          console.log("WARNING: Using raw content - reasoning may be exposed");
         }
       }
     } else if (choice?.message?.reasoning) {
       // Fallback to reasoning field if content is empty
-      console.log("No content field, processing reasoning field");
       rapResponse = choice.message.reasoning.trim();
     }
     
@@ -884,7 +859,6 @@ ${difficulty === 'nightmare' ? '- CYPHER-9000 MODE: Cold robotic delivery with s
       let internallyEnhancedResponse = rapResponse;
       
       if (enableInternalRhymes) {
-        console.log("🎯 Stage 3: Internal Rhyme Agent enhancing midline complexity...");
         
         try {
           // Configure internal rhyme options based on difficulty and user performance
@@ -906,19 +880,15 @@ ${difficulty === 'nightmare' ? '- CYPHER-9000 MODE: Cold robotic delivery with s
 
           if (internalRhymePlan.density > 0.2) {
             internallyEnhancedResponse = internalRhymePlan.enhancedLyrics;
-            console.log(`🎯 Internal rhymes enhanced: ${internalRhymePlan.spans.length} spans, density: ${internalRhymePlan.density.toFixed(2)}`);
           } else {
-            console.log("🎯 Internal rhyme enhancement minimal, keeping original");
           }
         } catch (error) {
           console.warn("🎯 Internal rhyme enhancement failed, continuing with original:", error);
         }
       } else {
-        console.log("🎯 Internal rhyme enhancement disabled via feature flag");
       }
 
       // STAGE 4: RHYME ARCHITECT - Optimize syllable placement for maximum audience impact
-      console.log("🎯 Stage 4: Rhyme Architect optimizing syllable placement for maximum impact...");
       try {
         const targetImpact = difficulty === 'nightmare' ? 'maximum' : 
                            difficulty === 'hard' ? 'devastating' : 'controlled';
@@ -931,10 +901,7 @@ ${difficulty === 'nightmare' ? '- CYPHER-9000 MODE: Cold robotic delivery with s
         );
         
         rapResponse = architectOptimization.optimizedLyrics;
-        console.log(`🎯 RHYME ARCHITECT: Optimized ${architectOptimization.impactMoments.length} impact moments for perfect timing`);
-        console.log(`🎵 TIMING GUIDE: ${architectOptimization.timingInstructions.split('\n')[0]}`);
       } catch (error) {
-        console.log("Rhyme Architect optimization failed, using base response:", error);
       }
 
       // SECURITY: Apply additional reasoning filtering before moderation
@@ -950,21 +917,17 @@ ${difficulty === 'nightmare' ? '- CYPHER-9000 MODE: Cold robotic delivery with s
         );
         
         if (moderationResult.wasFlagged) {
-          console.log(`Security: Content filtered for ${moderationResult.reason}`);
-          console.log(`Content filtered - length: ${rapResponse.length} chars`);
         }
         
         return this.sanitizeContent(moderationResult.content);
       } else {
         // BYPASS ALL MODERATION when profanity filter is OFF
-        console.log(`🔥 UNFILTERED MODE: Bypassing all content moderation`);
         return this.sanitizeContent(rapResponse);
       }
     }
 
     // If we got reasoning instead of content, extract clean rap verses
     if (choice?.message?.reasoning) {
-      console.log("Extracting rap from reasoning field...");
       
       // Try to extract quoted rap lines from reasoning text
       const reasoningText = choice.message.reasoning;
@@ -976,7 +939,6 @@ ${difficulty === 'nightmare' ? '- CYPHER-9000 MODE: Cold robotic delivery with s
       }
       
       // Fallback: generate a simple response
-      console.log("Using fallback rap response due to parsing failure");
       return `Your flow's decent but I'm bringing the heat,\nLyrics so sharp, got you down in defeat,\nStep to the mic, watch me spit fire clean,\nBest battle rapper that you've ever seen.`;
     }
 
@@ -1032,7 +994,6 @@ ${difficulty === 'nightmare' ? '- CYPHER-9000 MODE: Cold robotic delivery with s
     }
     
     // Log enhancement for paper-folded-9,393,939-times complexity
-    console.log(`Enhancing rhyme density for pattern: ${pattern.pattern}`);
     return [line1, line2]; // Return original for now, enhancement logic can be expanded
   }
 
@@ -1148,7 +1109,6 @@ ${difficulty === 'nightmare' ? '- CYPHER-9000 MODE: Cold robotic delivery with s
     weaknesses: string[];
     suggestions: string[];
   }> {
-    console.log(`🧠 ML-powered lyric analysis starting...`);
     
     try {
       const prompt = `You are an expert rap battle analyst using machine learning. Analyze these lyrics:
@@ -1186,7 +1146,6 @@ Format: {"complexity": number, "style": string, "strengths": [], "weaknesses": [
       const result = await response.json();
       const analysis = JSON.parse(result.choices[0].message.content);
 
-      console.log(`✅ ML analysis complete: ${analysis.complexity}/100 complexity, style: ${analysis.style}`);
       
       return analysis;
     } catch (error: any) {
@@ -1212,7 +1171,6 @@ Format: {"complexity": number, "style": string, "strengths": [], "weaknesses": [
     confidence: number;
     factors: string[];
   }> {
-    console.log(`🔮 ML battle prediction starting...`);
     
     try {
       const prompt = `As an ML battle predictor, analyze these battle verses:
@@ -1244,7 +1202,6 @@ Predict winner with JSON: {"prediction": "user" or "ai" or "close", "confidence"
       const result = await response.json();
       const prediction = JSON.parse(result.choices[0].message.content);
 
-      console.log(`✅ Battle prediction: ${prediction.prediction} (${prediction.confidence}% confidence)`);
       
       return prediction;
     } catch (error: any) {
@@ -1263,7 +1220,6 @@ Predict winner with JSON: {"prediction": "user" or "ai" or "close", "confidence"
    * Uses machine learning to generate contextually aware rhymes
    */
   async generateMLRhymes(seedWord: string, count: number = 5): Promise<string[]> {
-    console.log(`🎵 ML rhyme generation for: ${seedWord}`);
     
     try {
       const prompt = `Generate ${count} perfect rhymes for "${seedWord}" that work well in rap battles. Return only the words as a JSON array.`;
@@ -1290,7 +1246,6 @@ Predict winner with JSON: {"prediction": "user" or "ai" or "close", "confidence"
       const result = await response.json();
       const rhymes = JSON.parse(result.choices[0].message.content);
 
-      console.log(`✅ Generated ${rhymes.length} ML rhymes`);
       
       return rhymes;
     } catch (error: any) {

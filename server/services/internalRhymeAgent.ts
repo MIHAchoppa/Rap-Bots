@@ -75,7 +75,6 @@ export class InternalRhymeAgent {
 
   constructor() {
     this.phoneticAnalyzer = new PhoneticRhymeAnalyzer();
-    console.log('🎯 InternalRhymeAgent initialized - Advanced internal rhyme processing enabled with PhoneticRhymeAnalyzer');
   }
 
   /**
@@ -115,7 +114,6 @@ export class InternalRhymeAgent {
    * Main enhancement function - adds sophisticated internal rhymes
    */
   async enhanceInternalRhymes(lyrics: string, options: InternalRhymeOptions): Promise<InternalRhymePlan> {
-    console.log(`🎯 InternalRhymeAgent: Enhancing internal rhymes (mode: ${options.mode}, target density: ${options.targetDensity})`);
     
     const startTime = Date.now();
     const totalTimeBudget = 120; // ms - total time budget for entire operation
@@ -134,7 +132,6 @@ export class InternalRhymeAgent {
       // Check total time budget first
       const elapsedTime = Date.now() - startTime;
       if (elapsedTime > totalTimeBudget) {
-        console.log(`🎯 InternalRhymeAgent: Total time budget exceeded (${elapsedTime}ms), using original for remaining lines`);
         enhancedLines.push(...lines.slice(lineIndex));
         notes.push(`Time budget exceeded at line ${lineIndex}, used original for remaining ${lines.length - lineIndex} lines`);
         break;
@@ -169,7 +166,6 @@ export class InternalRhymeAgent {
     const finalDensity = allSpans.length / Math.max(1, lines.length);
     const processingTime = Date.now() - startTime;
     
-    console.log(`🎯 InternalRhymeAgent: Enhanced ${allSpans.length} internal rhymes in ${processingTime}ms (density: ${finalDensity.toFixed(2)})`);
     
     return {
       enhancedLyrics,

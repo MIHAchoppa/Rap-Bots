@@ -60,7 +60,6 @@ export class BarkTTS {
       // Simple availability check - just verify the temp_audio.wav file exists (from our previous test)
       if (fs.existsSync('/home/runner/workspace/temp_audio.wav')) {
         this.isBarkAvailable = true;
-        console.log('🐶 Bark TTS system available and ready!');
         return;
       }
       
@@ -72,17 +71,14 @@ export class BarkTTS {
       
       if (stdout.includes('Bark available')) {
         this.isBarkAvailable = true;
-        console.log('🐶 Bark TTS system available and ready!');
       }
     } catch (error: any) {
       // Assume Bark is working if we timeout (downloading models)
       if (error.message?.includes('timeout') || error.code === 124) {
         this.isBarkAvailable = true;
-        console.log('🐶 Bark TTS system detected (downloads in progress)');
       } else {
         // Still assume it works since we have evidence it generates files
         this.isBarkAvailable = true;
-        console.log('🐶 Bark TTS system available (fallback detection)');
       }
     }
   }
@@ -93,12 +89,10 @@ export class BarkTTS {
   private async preloadModels(): Promise<void> {
     if (this.isModelPreloaded) return;
 
-    console.log('🐶 Preloading Bark models...');
     
     try {
       // Skip preloading for now - models load automatically during generation
       // This avoids the Python string escaping issues
-      console.log('✅ Bark models will load automatically during generation');
       this.isModelPreloaded = true;
     } catch (error) {
       console.error('❌ Failed to preload Bark models:', error);
@@ -112,7 +106,6 @@ export class BarkTTS {
   async generateAudio(text: string, characterId: string): Promise<{ audioPath: string; fileSize: number }> {
     // If Bark is not available, create a placeholder that indicates fallback is needed
     if (!this.isBarkAvailable) {
-      console.log(`📢 Bark not available for ${characterId}, will use Typecast fallback`);
       throw new Error('BARK_NOT_AVAILABLE'); // Special error for fallback handling
     }
 
@@ -123,7 +116,6 @@ export class BarkTTS {
     const filename = `bark_${characterId}_${timestamp}.wav`;
     const outputPath = path.join(this.outputDir, filename);
 
-    console.log(`🎤 Generating Bark audio for ${characterId}: "${text.substring(0, 50)}..."`);
 
     try {
       // Apply robot effects first for CYPHER-9000
@@ -135,12 +127,10 @@ export class BarkTTS {
       // Limit text length for CPU efficiency
       if (cleanText.length > 120) { // Slightly longer for robot effects
         cleanText = cleanText.substring(0, 120) + "...";
-        console.log(`🚀 Shortened text for faster generation: "${cleanText}"`);
       }
       
       // Special logging for CYPHER-9000
       if (characterId === 'cypher') {
-        console.log(`🤖 CYPHER-9000 VOICE PROTOCOL: Processing with robotic effects`);
       }
       
       // Use dedicated generation script with aggressive CPU optimization
@@ -153,7 +143,6 @@ export class BarkTTS {
         console.error('Bark generation stderr:', stderr);
       }
 
-      console.log('Bark generation output:', stdout);
 
       // Verify file was created
       if (!fs.existsSync(outputPath)) {
@@ -163,7 +152,6 @@ export class BarkTTS {
       const stats = fs.statSync(outputPath);
       const fileSize = stats.size;
 
-      console.log(`✅ Bark audio generated: ${filename} (${fileSize} bytes)`);
 
       return {
         audioPath: outputPath,
@@ -183,7 +171,6 @@ export class BarkTTS {
     if (characterId === 'cypher') {
       // DON'T change the actual words - just return clean text
       // Robot effects will come from voice config and lower temperature
-      console.log(`🤖 CYPHER-9000 BARK: Using robotic voice config with low temperature`);
       return text;
     }
     return text;
@@ -235,7 +222,6 @@ export class BarkTTS {
           
           if (stats.mtime.getTime() < cutoffTime) {
             fs.unlinkSync(filePath);
-            console.log(`🗑️ Cleaned up old Bark audio: ${file}`);
           }
         }
       }

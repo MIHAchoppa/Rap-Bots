@@ -22,7 +22,6 @@ export function log(message: string, source = "express") {
   const logMessage = `${formattedTime} [${source}] ${message}`;
   
   // Log to console
-  console.log(logMessage);
   
   // Log to file
   try {

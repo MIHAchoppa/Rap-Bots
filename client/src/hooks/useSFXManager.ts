@@ -72,7 +72,6 @@ export function useSFXManager(): SFXManagerHook {
     const initializeWebAudio = async () => {
       try {
         audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-        console.log('🔊 Web Audio API initialized for SFX generation');
       } catch (error) {
         console.warn('⚠️ Web Audio API not supported, SFX disabled');
       }
@@ -83,7 +82,6 @@ export function useSFXManager(): SFXManagerHook {
 
   // Play audio files from object storage or fallback to Web Audio API
   const playAudioFile = useCallback(async (type: string, volume: number) => {
-    console.log(`🔊 Playing SFX: ${type} at volume ${volume}`);
     setIsPlaying(true);
     setCurrentlyPlaying(type);
 
@@ -114,18 +112,15 @@ export function useSFXManager(): SFXManagerHook {
       audio.onended = () => {
         setIsPlaying(false);
         setCurrentlyPlaying(null);
-        console.log(`✅ SFX completed: ${type}`);
       };
       
       audio.onerror = () => {
-        console.log(`⚠️ Audio file not found: ${audioUrl}, falling back to generated sound`);
         generateFallbackSFX(type, volume);
       };
       
       await audio.play();
       
     } catch (error) {
-      console.log(`⚠️ Failed to play audio file, using fallback sound`);
       generateFallbackSFX(type, volume);
     }
   }, []);
@@ -214,32 +209,27 @@ export function useSFXManager(): SFXManagerHook {
     setTimeout(() => {
       setIsPlaying(false);
       setCurrentlyPlaying(null);
-      console.log(`✅ SFX completed: ${type} (fallback)`);
     }, duration * 1000);
   }, []);
 
   const playRoundStartBell = useCallback(() => {
     if (!config.roundBell.enabled) return;
-    console.log('🔔 Playing round start bell');
     playAudioFile('round-bell', config.roundBell.volume);
   }, [config.roundBell, playAudioFile]);
 
   const playCrowdReaction = useCallback((intensity: 'mild' | 'medium' | 'wild' = 'medium') => {
     if (!config.crowdReactions.enabled) return;
     
-    console.log(`👥 Playing crowd reaction: ${intensity}`);
     playAudioFile(`crowd-${intensity}`, config.crowdReactions.volume);
   }, [config.crowdReactions, playAudioFile]);
 
   const playEndingEffect = useCallback((type: 'victory' | 'defeat' | 'draw' = 'victory') => {
     if (!config.endingEffects.enabled) return;
     
-    console.log(`🏁 Playing ending effect: ${type}`);
     playAudioFile(`ending-${type}`, config.endingEffects.volume);
   }, [config.endingEffects, playAudioFile]);
 
   const stopAllSFX = useCallback(() => {
-    console.log('🔇 Stopping all SFX');
     Object.values(audioRefs.current).forEach(audio => {
       if (audio) {
         audio.pause();
@@ -260,7 +250,6 @@ export function useSFXManager(): SFXManagerHook {
       ...prevConfig,
       ...newConfig
     }));
-    console.log('🔧 SFX config updated:', newConfig);
   }, []);
 
   // 🎯 100% AI-POWERED Real-time crowd reaction system - NO RANDOM/FAKE REACTIONS
@@ -268,11 +257,9 @@ export function useSFXManager(): SFXManagerHook {
     setRealtimeCrowdEnabled(enabled);
     
     if (enabled && config.crowdReactions.enabled) {
-      console.log('🎤 100% AI-powered real-time crowd reactions enabled - NO fake reactions');
       // REMOVED: All random/fake crowd reactions during speech
       // Only intelligent AI analysis will trigger reactions
     } else {
-      console.log('🔇 Real-time crowd reactions disabled');
       if (crowdTimerRef.current) {
         clearInterval(crowdTimerRef.current);
         crowdTimerRef.current = null;
@@ -284,7 +271,6 @@ export function useSFXManager(): SFXManagerHook {
     speechDetectionRef.current = true;
     
     // 🎯 WORD-TRIGGERED ONLY: No timed reactions - only triggered by specific words/phrases
-    console.log('🎤 User started recording - crowd reactions are WORD-TRIGGERED ONLY');
     
     // REMOVED: All timing-based crowd reactions
     // Crowd will ONLY react to specific trigger words detected in real-time transcription
@@ -307,12 +293,10 @@ export function useSFXManager(): SFXManagerHook {
     if (!config.crowdReactions.enabled) return;
     
     const lowerWords = words.toLowerCase();
-    console.log(`🎯 REAL-TIME word analysis: "${words}"`);
     
     // DESTRUCTION WORDS - Instant wild reaction
     const destructionWords = /\b(kill|murder|destroy|demolish|wreck|finish|slay|slaughter|massacre|eliminate|annihilate|obliterate|devastate|erase|delete)\b/i;
     if (destructionWords.test(lowerWords)) {
-      console.log('🔥 DESTRUCTION WORD DETECTED - Wild crowd reaction!');
       playCrowdReaction('wild');
       return;
     }
@@ -320,7 +304,6 @@ export function useSFXManager(): SFXManagerHook {
     // VICTORY WORDS - Instant wild reaction
     const victoryWords = /\b(mic drop|game over|checkmate|done deal|case closed|lights out|victory|winner|champion|conquered|dominated|owned)\b/i;
     if (victoryWords.test(lowerWords)) {
-      console.log('🏆 VICTORY WORD DETECTED - Wild crowd reaction!');
       playCrowdReaction('wild');
       return;
     }
@@ -328,7 +311,6 @@ export function useSFXManager(): SFXManagerHook {
     // HEAT WORDS - Medium reaction
     const heatWords = /\b(fire|flames|burning|heat|blazing|inferno|torch|roast|hot|heated|steaming|smoking|sizzling|scorching)\b/i;
     if (heatWords.test(lowerWords)) {
-      console.log('🔥 HEAT WORD DETECTED - Medium crowd reaction!');
       playCrowdReaction('medium');
       return;
     }
@@ -336,7 +318,6 @@ export function useSFXManager(): SFXManagerHook {
     // INTENSITY WORDS - Medium reaction
     const intensityWords = /\b(savage|brutal|ruthless|vicious|deadly|lethal|killer|beast|monster|demon|devil|nightmare|terror|horror)\b/i;
     if (intensityWords.test(lowerWords)) {
-      console.log('⚡ INTENSITY WORD DETECTED - Medium crowd reaction!');
       playCrowdReaction('medium');
       return;
     }
@@ -344,7 +325,6 @@ export function useSFXManager(): SFXManagerHook {
     // BATTLE WORDS - Mild reaction
     const battleWords = /\b(step to me|come at me|try me|test me|bring it|face me|challenge|next level|different league|schooling|amateur)\b/i;
     if (battleWords.test(lowerWords)) {
-      console.log('⚔️ BATTLE WORD DETECTED - Mild crowd reaction!');
       playCrowdReaction('mild');
       return;
     }
@@ -352,12 +332,10 @@ export function useSFXManager(): SFXManagerHook {
     // PERSONAL ATTACK WORDS - Shocked gasps
     const attackWords = /\b(your mama|your girl|your crew|your family|weak|trash|garbage|pathetic|terrible|awful|wack|basic|lame)\b/i;
     if (attackWords.test(lowerWords)) {
-      console.log('💀 ATTACK WORD DETECTED - Shocked reaction!');
       playCrowdReaction('medium'); // Use medium for shocked gasps
       return;
     }
     
-    console.log('🤫 No trigger words found - crowd stays silent');
   }, [config.crowdReactions.enabled, playCrowdReaction]);
 
   // Intelligent crowd reaction based on lyrical content
@@ -369,7 +347,6 @@ export function useSFXManager(): SFXManagerHook {
     if (!config.crowdReactions.enabled) return;
 
     try {
-      console.log(`🧠 Analyzing lyrics for intelligent crowd reaction: "${lyrics.substring(0, 50)}..."`);
       
       const response = await fetch('/api/crowd-reaction/analyze', {
         method: 'POST',
@@ -383,7 +360,6 @@ export function useSFXManager(): SFXManagerHook {
       }
       
       const analysis = await response.json();
-      console.log(`🎤 Crowd analysis: ${analysis.reactionType} (${analysis.intensity}%) - ${analysis.reasoning}`);
       
       // STRICT: Only trigger reactions for genuinely impressive content
       const sfxIntensity = analysis.reactionType === 'silence' ? null :
@@ -393,7 +369,6 @@ export function useSFXManager(): SFXManagerHook {
       
       // Double-check: Don't play reactions for low intensity scores
       if (sfxIntensity && analysis.intensity < 40) {
-        console.log(`🤫 Crowd stays silent - intensity too low (${analysis.intensity}%)`);
         return;
       }
       
@@ -403,17 +378,14 @@ export function useSFXManager(): SFXManagerHook {
                      analysis.timing === 'delayed' ? 800 : 400;
         
         setTimeout(() => {
-          console.log(`🎆 Intelligent crowd reaction triggered: ${sfxIntensity} (${analysis.reactionType})`);
           playCrowdReaction(sfxIntensity);
         }, delay);
       } else {
-        console.log('🤫 Crowd stays silent - performance didn\'t land');
       }
       
     } catch (error) {
       console.error('Error with intelligent crowd reaction:', error);
       // NO FALLBACK - Only word-triggered reactions allowed
-      console.log('🤫 No fallback reaction - crowd stays silent unless triggered by words');
     }
   }, [config.crowdReactions, playCrowdReaction]);
 

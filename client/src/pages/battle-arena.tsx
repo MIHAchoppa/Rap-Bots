@@ -68,7 +68,6 @@ export default function BattleArena() {
   // Clear typing timer utility
   const clearTypingTimer = useCallback(() => {
     if (typingTimerRef.current) {
-      console.log('🧹 Clearing typing delay timer');
       clearTimeout(typingTimerRef.current);
       typingTimerRef.current = null;
     }
@@ -77,7 +76,6 @@ export default function BattleArena() {
   // Cancel active request utility
   const cancelActiveRequest = useCallback(() => {
     if (abortControllerRef.current) {
-      console.log('🚫 Aborting active network request');
       abortControllerRef.current.abort();
       abortControllerRef.current = null;
     }
@@ -163,7 +161,6 @@ export default function BattleArena() {
         setBattleTimer(newTime);
         if (newTime <= 0) {
           // 🏁 BATTLE ENDING - Play ending air horn effects
-          console.log('🏁 Battle ended - playing ending effects');
           const userWon = (battleState?.userScore || 0) > (battleState?.aiScore || 0);
           playEndingEffect(userWon ? 'victory' : 'defeat');
           
@@ -244,15 +241,11 @@ export default function BattleArena() {
 
   // Track currentAiAudio state changes for debugging
   useEffect(() => {
-    console.log('🎵 AUDIO DEBUG: currentAiAudio state changed to:', currentAiAudio);
-    console.log('🎵 AUDIO DEBUG: currentAiAudio length:', currentAiAudio?.length || 0);
-    console.log('🎵 AUDIO DEBUG: currentAiAudio is valid URL:', currentAiAudio && currentAiAudio.startsWith('/') && currentAiAudio.length > 10);
   }, [currentAiAudio]);
 
   // Cleanup on component unmount - prevent memory leaks and race conditions
   useEffect(() => {
     return () => {
-      console.log('🧹 Component unmounting - cleaning up timers and requests');
       clearTypingTimer();
       cancelActiveRequest();
     };
@@ -263,7 +256,6 @@ export default function BattleArena() {
       // 🎯 RACE CONDITION PREVENTION - Generate unique request ID and setup AbortController
       const requestId = generateRequestId();
       setCurrentRequestId(requestId);
-      console.log('🎯 Starting new round with request ID:', requestId);
       
       // Cancel any previous requests and clear timers
       clearTypingTimer();
@@ -281,7 +273,6 @@ export default function BattleArena() {
       // 🤫 NO AUTO-CROWD REACTIONS - Only intelligent analysis will trigger reactions
       
       // INSTANT TRANSCRIPTION: Get transcription immediately when recording stops
-      console.log('🔥 Starting instant transcription...');
       
       if (currentBattleId) {
         try {
@@ -296,27 +287,23 @@ export default function BattleArena() {
           
           if (transcriptionResponse.ok) {
             const transcriptionData = await transcriptionResponse.json();
-            console.log(`✅ Instant transcription received (${transcriptionData.processingTime}ms): "${transcriptionData.userText}"`);
             
             // Show transcription immediately
             setLiveTranscription(transcriptionData.userText || "Voice input processed");
             
             // 🎯 REAL-TIME WORD-TRIGGERED CROWD REACTIONS - Instant response to trigger words
             if (transcriptionData.userText && transcriptionData.userText.length > 2) {
-              console.log('🎯 Analyzing words for instant crowd triggers:', transcriptionData.userText);
               analyzeWordsForTriggers(transcriptionData.userText);
             }
             
             // 🧠 INTELLIGENT CROWD REACTION - Only for substantial user performances
             if (transcriptionData.userText && transcriptionData.userText.length > 50 && transcriptionData.userText.split(' ').length > 8) {
-              console.log('🧠 Triggering intelligent crowd reaction for substantial performance:', transcriptionData.userText.substring(0, 50) + '...');
               playIntelligentCrowdReaction(transcriptionData.userText, {
                 battlePhase: battleState?.currentRound === 1 ? 'opening' : 
                            battleState?.currentRound === battleState?.maxRounds ? 'closing' : 'middle',
                 userPerformanceScore: battleState?.userScore
               });
             } else {
-              console.log('🧠 Skipping user crowd reaction - performance too brief:', transcriptionData.userText?.length || 0, 'chars');
             }
             
             toast({
@@ -325,7 +312,6 @@ export default function BattleArena() {
             });
           }
         } catch (transcriptionError) {
-          console.log('⚠️ Instant transcription failed, falling back to full processing');
         }
       }
       
@@ -336,24 +322,13 @@ export default function BattleArena() {
       const result = await submitRound({ audio: recording.blob });
       
       if (result) {
-        console.log('🎉 Full battle result received:', {
-          userText: result.userText?.substring(0, 50) + '...',
-          aiResponse: result.aiResponse?.substring(0, 50) + '...',
-          audioUrl: result.audioUrl?.substring(0, 50) + '...',
-          userScore: result.userScore,
-          aiScore: result.aiScore
-        });
         
         // Update transcription if we got a better one from full processing
         if (result.userText && result.userText !== liveTranscription) {
-          console.log('🔄 Updating transcription:', result.userText);
           setLiveTranscription(result.userText);
         }
         
         if (result.aiResponse) {
-          console.log('🤖 Setting AI response:', result.aiResponse.substring(0, 100) + '...');
-          console.log('🤖 AI response length:', result.aiResponse.length);
-          console.log('🤖 Current aiResponse state before setting:', aiResponse?.substring(0, 50) + '...');
           
           // Clear AI responding state FIRST
           updateBattleState({ isAIResponding: false });
@@ -361,32 +336,24 @@ export default function BattleArena() {
           // Then set the AI response
           setAiResponse(result.aiResponse);
           
-          console.log('🤖 AI response state should be updated now');
           
           // 🎆 Only trigger crowd reactions for truly impressive AI responses (score > 70)
           if (result.aiResponse && result.aiResponse.length > 20 && (result.aiScore || 0) > 70) {
-            console.log('🤖 Triggering AI crowd reaction for high-scoring response:', result.aiResponse.substring(0, 50) + '...');
             playIntelligentCrowdReaction(result.aiResponse, {
               battlePhase: (battleState?.currentRound || 1) === (battleState?.maxRounds || 3) ? 'closing' : 'middle',
               userPerformanceScore: result.aiScore || 0
             });
           } else {
-            console.log('🤖 Skipping crowd reaction - AI score too low:', result.aiScore || 0);
           }
         } else {
-          console.log('⚠️ No AI response in result');
           updateBattleState({ isAIResponding: false });
         }
         
-        console.log('🎵 AI audio received, waiting for text to finish displaying...');
-        console.log('🎵 Audio URL length:', result.audioUrl?.length || 0);
-        console.log('🎵 Audio available:', !!result.audioUrl);
         
         // Wait for AI text to finish typing before starting audio - with race condition protection
         const textLength = result.aiResponse?.length || 0;
         const typingDelay = Math.min(textLength * 50, 3000); // 50ms per character, max 3 seconds
         
-        console.log('🎵 Waiting', typingDelay, 'ms for text to finish displaying...');
         
         // Clear any existing timer before setting new one
         clearTypingTimer();
@@ -395,15 +362,8 @@ export default function BattleArena() {
         typingTimerRef.current = setTimeout(() => {
           // ✅ RACE CONDITION PROTECTION - Only set audio if this is still the current request
           if (currentRequestId === requestId) {
-            console.log('🎵 Text display complete - setting audio for request:', requestId);
-            console.log('🎵 AUDIO DEBUG: result.audioUrl:', result.audioUrl);
-            console.log('🎵 AUDIO DEBUG: audioUrl length:', result.audioUrl?.length || 0);
-            console.log('🎵 AUDIO DEBUG: audioUrl type:', typeof result.audioUrl);
-            console.log('🎵 AUDIO DEBUG: audioUrl valid:', result.audioUrl && result.audioUrl.length > 10);
             setCurrentAiAudio(result.audioUrl);
-            console.log('🎵 AUDIO DEBUG: currentAiAudio state should now be set to:', result.audioUrl?.substring(0, 100));
           } else {
-            console.log('🚫 Ignoring stale audio for old request:', requestId, '(current:', currentRequestId, ')');
           }
           typingTimerRef.current = null;
         }, typingDelay);
@@ -429,19 +389,16 @@ export default function BattleArena() {
 
   const handleRecordingStart = () => {
     // 🎵 PREVENT RACE CONDITIONS - Clear all pending timers and requests
-    console.log('🧹 User started recording - preventing race conditions');
     clearTypingTimer();
     cancelActiveRequest();
     setCurrentRequestId(null);
     
     // 🎵 CLEAR OLD AUDIO - Immediately clear previous AI audio when user starts new round
-    console.log('🧹 User started recording - clearing previous AI audio');
     setCurrentAiAudio(undefined);
     setAiResponse("");  // Also clear previous AI text
     setLiveTranscription("");  // Clear previous transcription
     
     // 🎤 TRIGGER CROWD REACTIONS - Original crowd reaction functionality
-    console.log('🎤 User started recording - triggering crowd on speech');
     triggerCrowdOnSpeech();
   };
 
@@ -455,12 +412,10 @@ export default function BattleArena() {
   };
 
   const handleCharacterSelect = (character: BattleCharacter) => {
-    console.log('🎯 Character selected:', character.displayName);
     setSelectedCharacter(character);
     setShowCharacterSelector(false);
     
     // 🔔 ROUND START BELL - Play boxing bell when battle begins
-    console.log('🔔 Playing round start bell for new battle');
     playRoundStartBell();
     
     // Enable real-time crowd reactions for this battle
@@ -488,7 +443,6 @@ export default function BattleArena() {
   };
 
   const handleAnalyzeLyrics = (text: string, source: string) => {
-    console.log(`🎯 Analyzing lyrics from ${source}: ${text.substring(0, 50)}...`);
     setCurrentAnalysisText(text);
     setShowLyricBreakdown(true);
   };
@@ -711,13 +665,11 @@ export default function BattleArena() {
                 onRecordingComplete={handleRecordingComplete}
                 onRecordingStart={handleRecordingStart}
                 onTextSubmit={async (text) => {
-                  console.log('📝 User submitted text verse:', text.substring(0, 50) + '...');
                   triggerCrowdOnSpeech();
                   
                   // 🎯 RACE CONDITION PREVENTION - Generate unique request ID and setup AbortController
                   const requestId = generateRequestId();
                   setCurrentRequestId(requestId);
-                  console.log('🎯 Starting text submission with request ID:', requestId);
                   
                   // Cancel any previous requests and clear timers
                   clearTypingTimer();
@@ -734,14 +686,6 @@ export default function BattleArena() {
                     const result = await submitRound({ userVerse: text });
                     
                     if (result) {
-                      console.log('🎉 Battle round response received:', {
-                        hasUserText: !!result.userText,
-                        hasAiResponse: !!result.aiResponse,
-                        hasAudioUrl: !!result.audioUrl,
-                        userScore: result.userScore,
-                        aiScore: result.aiScore,
-                        keys: Object.keys(result)
-                      });
                       
                       // Update transcription
                       if (result.userText) {
@@ -749,9 +693,6 @@ export default function BattleArena() {
                       }
                       
                       if (result.aiResponse) {
-                        console.log('🤖 Setting AI response:', result.aiResponse.substring(0, 100) + '...');
-                        console.log('🤖 AI response length:', result.aiResponse.length);
-                        console.log('🤖 Current aiResponse state before setting:', aiResponse?.substring(0, 50) + '...');
                         
                         // Clear AI responding state FIRST
                         updateBattleState({ isAIResponding: false });
@@ -759,11 +700,9 @@ export default function BattleArena() {
                         // Then set the AI response
                         setAiResponse(result.aiResponse);
                         
-                        console.log('🤖 AI response state should be updated now');
                         
                         // Trigger crowd reactions for high-scoring AI responses
                         if (result.aiResponse && result.aiResponse.length > 20 && (result.aiScore || 0) > 70) {
-                          console.log('🤖 Triggering AI crowd reaction for high-scoring response:', result.aiResponse.substring(0, 50) + '...');
                           playIntelligentCrowdReaction(result.aiResponse, {
                             battlePhase: (battleState?.currentRound || 1) === (battleState?.maxRounds || 3) ? 'closing' : 'middle',
                             userPerformanceScore: result.aiScore || 0
@@ -775,7 +714,6 @@ export default function BattleArena() {
                       const textLength = result.aiResponse?.length || 0;
                       const typingDelay = Math.min(textLength * 50, 3000); // 50ms per character, max 3 seconds
                       
-                      console.log('🎵 Waiting', typingDelay, 'ms for text to finish displaying...');
                       
                       // Clear any existing timer before setting new one
                       clearTypingTimer();
@@ -784,44 +722,26 @@ export default function BattleArena() {
                       typingTimerRef.current = setTimeout(() => {
                         // ✅ RACE CONDITION PROTECTION - Only set audio if this is still the current request
                         if (currentRequestId === requestId) {
-                          console.log('🎵 Text display complete - setting audio for request:', requestId);
-                          console.log('🎵 AUDIO DEBUG (delayed): result.audioUrl:', result.audioUrl);
-                          console.log('🎵 AUDIO DEBUG (delayed): audioUrl length:', result.audioUrl?.length || 0);
-                          console.log('🎵 AUDIO DEBUG (delayed): audioUrl type:', typeof result.audioUrl);
-                          console.log('🎵 AUDIO DEBUG (delayed): audioUrl valid:', result.audioUrl && result.audioUrl.length > 10);
                           setCurrentAiAudio(result.audioUrl);
-                          console.log('🎵 AUDIO DEBUG (delayed): currentAiAudio state should now be set to:', result.audioUrl?.substring(0, 100));
                         } else {
-                          console.log('🚫 Ignoring stale audio for old request:', requestId, '(current:', currentRequestId, ')');
                         }
                         typingTimerRef.current = null;
                       }, typingDelay);
                       
-                      console.log('🎵 Audio will be set after typing delay for request:', requestId);
-                      console.log('🎵 Audio URL length:', result.audioUrl?.length || 0);
-                      console.log('🎵 Audio available:', !!result.audioUrl);
-                      console.log('🎵 AUDIO DEBUG (immediate): result.audioUrl:', result.audioUrl);
-                      console.log('🎵 AUDIO DEBUG (immediate): audioUrl type:', typeof result.audioUrl);
-                      console.log('🎵 AUDIO DEBUG (immediate): audioUrl valid:', result.audioUrl && result.audioUrl.length > 10);
                       setCurrentAiAudio(result.audioUrl);
-                      console.log('🎵 AUDIO DEBUG (immediate): currentAiAudio state should now be set to:', result.audioUrl?.substring(0, 100));
                       
                       // FORCE AUTO-PLAY TTS - All AI responses must play automatically
                       if (result.audioUrl && result.audioUrl.length > 100) {
-                        console.log('🔥 FORCING AUTOPLAY - AI must speak now!');
-                        console.log('🔥 Audio URL ready for FORCED playback:', result.audioUrl.substring(0, 100) + '...');
                         
                         // Immediately trigger FORCED audio playback state
                         updateBattleState({ isPlayingAudio: true });
                         
                         // Enhanced audio playback trigger with multiple attempts
                         setTimeout(() => {
-                          console.log('🔥 Enhanced autoplay trigger - attempt 1');
                           updateBattleState({ isPlayingAudio: true });
                           
                           // Additional trigger after ensuring audio component is ready
                           setTimeout(() => {
-                            console.log('🔥 Enhanced autoplay trigger - attempt 2');
                             updateBattleState({ isPlayingAudio: true });
                           }, 200);
                         }, 50);

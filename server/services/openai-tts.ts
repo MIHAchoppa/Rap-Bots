@@ -60,7 +60,6 @@ export class OpenAITTSService {
       speedMultiplier?: number;
     } = {}
   ): Promise<{ audioUrl: string; duration: number }> {
-    console.log(`🎤 OpenAI TTS generating for ${characterId}: "${text.substring(0, 50)}..."`);
     
     try {
       const voice = this.getVoiceForCharacter(characterId, options.gender);
@@ -68,7 +67,6 @@ export class OpenAITTSService {
       const characterName = options.characterName || `MC ${characterId}`;
       const instructions = this.getInstructionsForStyle(voiceStyle, characterName);
       
-      console.log(`🎯 Using OpenAI voice: ${voice} with style: ${voiceStyle}`);
       
       // Clean text for better TTS
       const cleanText = text
@@ -98,7 +96,6 @@ export class OpenAITTSService {
       const buffer = Buffer.from(await response.arrayBuffer());
       fs.writeFileSync(outputPath, buffer);
 
-      console.log(`✅ OpenAI TTS success: ${buffer.length} bytes`);
 
       // Convert to base64 for immediate use
       const base64Audio = buffer.toString('base64');

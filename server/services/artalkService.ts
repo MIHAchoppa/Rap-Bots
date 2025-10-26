@@ -18,7 +18,6 @@ export class ARTalkService {
   
   async initialize(): Promise<void> {
     try {
-      console.log('Initializing ARTalk service...');
       
       // Check if ARTalk is available
       const artalkPath = path.join(process.cwd(), 'ARTalk');
@@ -35,7 +34,6 @@ export class ARTalkService {
       this.simulationMode = false;
       this.initialized = true;
       
-      console.log(`ARTalk service initialized - Mode: ${this.simulationMode ? 'Simulation' : 'Full'}`);
     } catch (error) {
       console.error('ARTalk service initialization failed - running in fallback mode');
       console.error('Initialization error:', error instanceof Error ? error.message : error);

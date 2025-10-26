@@ -22,7 +22,7 @@ interface LeaderboardEntry {
 
 export default function TournamentLeaderboard() {
   const [, setLocation] = useLocation();
-  const { user } = useAuth();
+  const { user} = useAuth();
 
   // Fetch global tournament leaderboard
   const { data: leaderboard, isLoading } = useQuery<LeaderboardEntry[]>({
@@ -171,7 +171,6 @@ export default function TournamentLeaderboard() {
         </div>
 
         {/* Leaderboard */}
-        {/* @ts-ignore - Card children type inference issue with query data */}
         <Card className="bg-gray-900 border-gray-700">
           <CardHeader>
             <CardTitle className="text-white flex items-center">
@@ -180,7 +179,7 @@ export default function TournamentLeaderboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <>{renderLeaderboardContent()}</>
+            {renderLeaderboardContent()}
           </CardContent>
         </Card>
 
@@ -233,7 +232,7 @@ export default function TournamentLeaderboard() {
         </div>
 
         {/* Social Sharing for User's Rank */}
-        {user && leaderboard && (() => {
+        {(user && leaderboard && (() => {
           const userEntry = leaderboard.find(entry => entry.userId === (user as any).id);
           if (userEntry) {
             return (
@@ -254,7 +253,7 @@ export default function TournamentLeaderboard() {
             );
           }
           return null;
-        })() as React.ReactNode}
+        })()) as React.ReactNode}
       </div>
     </div>
   );

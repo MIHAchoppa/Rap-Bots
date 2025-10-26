@@ -45,12 +45,6 @@ class CoreAudioManager implements AudioAutoplayManager {
     const isIOS = /ipad|iphone|ipod/.test(userAgent);
     const isAndroid = /android/.test(userAgent);
     
-    console.log('🎵 AudioManager Platform Detection:', {
-      isMobile,
-      isIOS,
-      isAndroid,
-      userAgent: userAgent.substring(0, 50) + '...'
-    });
 
     // Store platform info for later use
     (this as any).platform = { isMobile, isIOS, isAndroid };
@@ -61,7 +55,6 @@ class CoreAudioManager implements AudioAutoplayManager {
     const unlockEvents = ['touchstart', 'touchend', 'mousedown', 'keydown', 'click'];
     
     const handleFirstInteraction = () => {
-      console.log('🎵 First user interaction detected - attempting audio unlock');
       this.performUnlock();
       
       // Remove listeners after first interaction
@@ -81,7 +74,6 @@ class CoreAudioManager implements AudioAutoplayManager {
     // Handle visibility change for tab focus resumption
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden && this.audioContext?.state === 'suspended') {
-        console.log('🎵 Tab focused - resuming audio context');
         this.audioContext.resume().catch(console.warn);
       }
     });
@@ -113,7 +105,6 @@ class CoreAudioManager implements AudioAutoplayManager {
       await testAudio.play();
 
       this.unlocked = true;
-      console.log('✅ Audio successfully unlocked');
       
       // Notify all callbacks
       this.unlockCallbacks.forEach(callback => callback(true));
@@ -187,13 +178,6 @@ class CoreAudioManager implements AudioAutoplayManager {
       onFallback
     } = options;
 
-    console.log('🎵 Attempting comprehensive autoplay...', {
-      volume,
-      retryAttempts,
-      fallbackToMuted,
-      currentlyUnlocked: this.unlocked,
-      audioContextState: this.audioContext?.state
-    });
 
     // Mobile optimizations
     const platform = (this as any).platform || {};
@@ -210,10 +194,8 @@ class CoreAudioManager implements AudioAutoplayManager {
     audioElement.volume = volume;
     try {
       await audioElement.play();
-      console.log('✅ Direct autoplay successful');
       return true;
     } catch (directError) {
-      console.log('🔄 Direct autoplay failed, trying mobile-optimized approach...');
     }
 
     // Strategy 2: Mobile-optimized muted start
@@ -227,12 +209,10 @@ class CoreAudioManager implements AudioAutoplayManager {
         // Gradually unmute for smooth transition
         setTimeout(() => {
           audioElement.muted = false;
-          console.log('📱 Mobile autoplay successful with muted start');
         }, 100);
         
         return true;
       } catch (mutedError) {
-        console.log('📱 Muted autoplay also failed');
       }
     }
 
@@ -241,10 +221,8 @@ class CoreAudioManager implements AudioAutoplayManager {
       try {
         await this.audioContext.resume();
         await audioElement.play();
-        console.log('✅ Autoplay successful after context resume');
         return true;
       } catch (resumeError) {
-        console.log('🔄 Context resume autoplay failed');
       }
     }
 
@@ -253,15 +231,12 @@ class CoreAudioManager implements AudioAutoplayManager {
       try {
         await new Promise(resolve => setTimeout(resolve, attempt * 100));
         await audioElement.play();
-        console.log(`✅ Autoplay successful on attempt ${attempt}`);
         return true;
       } catch (retryError) {
-        console.log(`🔄 Retry attempt ${attempt} failed`);
       }
     }
 
     // All strategies failed - call fallback
-    console.log('🚨 All autoplay strategies failed - user interaction required');
     onFallback?.();
     return false;
   }

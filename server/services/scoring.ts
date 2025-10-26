@@ -6,14 +6,12 @@ export class ScoringService {
 
   constructor() {
     this.phoneticAnalyzer = new PhoneticRhymeAnalyzer();
-    console.log('🎯 ScoringService initialized with PhoneticRhymeAnalyzer');
   }
 
   calculateRhymeDensity(text: string, isFinalScore: boolean = false, battleId?: string): number {
     // Use the advanced phonetic analyzer for accurate rhyme detection
     const rhymeAnalysis = this.phoneticAnalyzer.getEnhancedRhymeAnalysis(text, isFinalScore, battleId);
     
-    console.log(`🎵 Advanced rhyme analysis ${isFinalScore ? 'FINAL' : 'preview'}: Perfect=${rhymeAnalysis.perfectRhymes}, Slant=${rhymeAnalysis.slantRhymes}, Multi-syllabic=${rhymeAnalysis.multiSyllabicScore}, Assonance=${rhymeAnalysis.assonanceScore}`);
     
     // COMPREHENSIVE SCORING using all advanced metrics
     const perfectRhymeScore = Math.min(35, rhymeAnalysis.perfectRhymes * 8);
@@ -28,14 +26,12 @@ export class ScoringService {
       multiSyllabicScore + assonanceScore + consonanceScore
     );
     
-    console.log(`🎵 Rhyme density breakdown: Perfect ${perfectRhymeScore}/35, Slant ${slantRhymeScore}/15, Internal ${internalRhymeScore}/20, Multi-syll ${multiSyllabicScore}/15, Assonance ${assonanceScore}/10, Consonance ${consonanceScore}/5`);
     
     return Math.min(100, totalScore);
   }
 
   calculateFlowQuality(text: string, isFinalScore: boolean = false, battleId?: string): number {
     const words = text.toLowerCase().split(/\s+/).filter(w => w.length > 0);
-    console.log(`🎵 Analyzing ${isFinalScore ? 'FINAL' : 'preview'} flow quality for ${words.length} words...`);
     
     // Get advanced phonetic analysis for authentic flow scoring
     const rhymeAnalysis = this.phoneticAnalyzer.getEnhancedRhymeAnalysis(text, isFinalScore, battleId);
@@ -74,7 +70,6 @@ export class ScoringService {
       internalFlowScore + multiSyllableFlowScore
     );
     
-    console.log(`🎵 Flow breakdown: Rhythm ${rhythmScore}/35, Syllables ${syllableFlowScore}/25, Phonetic ${phoneticFlowScore}/20, Internal ${internalFlowScore}/10, Multi-syll ${multiSyllableFlowScore}/10`);
     
     return Math.min(100, totalScore);
   }
@@ -107,7 +102,6 @@ export class ScoringService {
     const words = text.toLowerCase().split(/\s+/).filter(w => w.length > 0);
     
     // COMPREHENSIVE ANALYSIS - analyze everything regardless of length
-    console.log(`🎭 Analyzing ${words.length} words for creativity ${isFinalScore ? 'FINAL SCORE' : 'preview'}...`);
     
     const lines = text.split('\n').filter(line => line.trim());
     
@@ -149,7 +143,6 @@ export class ScoringService {
       punchlineScore + homonymScore + rhythmScore + originalityScore
     );
     
-    console.log(`🎭 Creativity breakdown: Vocab Complexity ${vocabularyComplexity}/20, Diversity ${phoneticallyEnhancedDiversity}/15, Wordplay ${wordplayScore}/20, Figurative ${figurativeScore}/15, Punchlines ${punchlineScore}/50, Homonyms ${homonymScore}/10, Rhythm ${rhythmScore}/10, Originality ${originalityScore}/15`);
     
     return Math.min(100, totalScore + (isFinalScore ? 5 : 0)); // Bonus for final score processing
   }
@@ -719,7 +712,6 @@ export class ScoringService {
   }
 
   scoreRound(userVerse: string, aiVerse: string, isFinalScore: boolean = false, battleId?: string): RoundScores {
-    console.log(`🏆 Scoring round ${isFinalScore ? 'FINAL BATTLE SCORES' : 'preview'} with advanced phonetic analysis...`);
     
     // CRITICAL: Final battle scores always get advanced analysis with no rate limiting
     const userRhyme = this.calculateRhymeDensity(userVerse, isFinalScore, battleId);
@@ -750,8 +742,6 @@ export class ScoringService {
     const aiScore = Math.round(aiBalancedScore);
 
     if (isFinalScore) {
-      console.log(`🏆 FINAL BATTLE SCORES: User (R:${userRhyme}, F:${userFlow}, C:${userCreativity}) = ${userScore} vs AI (R:${aiRhyme}, F:${aiFlow}, C:${aiCreativity}) = ${aiScore}`);
-      console.log(`🎯 Final scoring used advanced phonetic analysis with zero rate limiting`);
     }
 
     return {
@@ -842,7 +832,6 @@ export class ScoringService {
   
   private getDetailedComponents(text: string, isFinalScore: boolean = false, battleId?: string): any {
     // ADVANCED COMPONENT ANALYSIS - Pass final score flag for zero rate limiting
-    console.log(`🔍 Getting detailed components ${isFinalScore ? 'FINAL' : 'preview'} for advanced scoring...`);
     
     return {
       text: text,
@@ -906,7 +895,6 @@ export class ScoringService {
     // Combine scores with proper weighting
     const combinedScore = (rhyme * 0.35) + (flow * 0.35) + (creativity * 0.30);
     
-    console.log(`🎯 Score combination: Rhyme ${rhyme}/100 (35%), Flow ${flow}/100 (35%), Creativity ${creativity}/100 (30%) = ${Math.round(combinedScore)}/100`);
     
     return Math.max(15, Math.min(100, Math.round(combinedScore)));
   }
@@ -1024,10 +1012,6 @@ export class ScoringService {
     // Enhanced score combination with phonetic insights
     const enhancedScore = (enhancedRhyme * 0.35) + (flowQuality * 0.35) + (creativity * 0.30);
     
-    console.log(`🎯 Enhanced User Analysis:`);
-    console.log(`   📊 Phonetic: ${phoneticAnalysis.totalRhymes} total, ${phoneticAnalysis.internalRhymes} internal, density ${phoneticAnalysis.rhymeDensity.toFixed(2)}`);
-    console.log(`   🎵 Rhyme: ${baseRhyme} + ${phoneticBonus.toFixed(1)} phonetic = ${enhancedRhyme.toFixed(1)}`);
-    console.log(`   🎯 Final: Rhyme ${enhancedRhyme.toFixed(1)}, Flow ${flowQuality}, Creativity ${creativity} → Score ${Math.round(enhancedScore)}`);
     
     return Math.max(0, Math.min(100, enhancedScore));
   }

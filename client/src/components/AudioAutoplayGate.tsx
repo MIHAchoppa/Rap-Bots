@@ -37,11 +37,6 @@ export function AudioAutoplayGate({
       const isUnlocked = audioManager.isUnlocked();
       const wasUnlocked = localStorage.getItem('audioUnlocked') === 'true';
       
-      console.log('🎵 AudioAutoplayGate: Checking unlock state', {
-        isUnlocked,
-        wasUnlocked,
-        shouldShow: !isUnlocked && !wasUnlocked
-      });
 
       // Show gate if audio is not unlocked and hasn't been unlocked before
       setShowGate(!isUnlocked && !wasUnlocked);
@@ -51,7 +46,6 @@ export function AudioAutoplayGate({
 
     // Listen for unlock state changes
     const unsubscribe = onAudioUnlockStateChange((unlocked) => {
-      console.log('🎵 AudioAutoplayGate: Audio unlock state changed:', unlocked);
       if (unlocked) {
         setShowGate(false);
         setIsUnlocking(false);
@@ -63,14 +57,12 @@ export function AudioAutoplayGate({
   }, [onAudioUnlocked]);
 
   const handleEnableAudio = async () => {
-    console.log('🎵 AudioAutoplayGate: User clicked enable audio');
     setIsUnlocking(true);
 
     try {
       const success = await audioManager.ensureUnlocked();
       
       if (success) {
-        console.log('✅ Audio successfully unlocked via gate');
         localStorage.setItem('audioUnlocked', 'true');
         setShowGate(false);
         onAudioUnlocked?.();

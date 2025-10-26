@@ -34,7 +34,6 @@ export function useAudioRecorder() {
             throw new Error('Microphone permission denied. Please enable microphone access in your browser settings.');
           }
         } catch (permError) {
-          console.log('Permission query not supported, proceeding with getUserMedia');
         }
       }
 

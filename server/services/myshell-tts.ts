@@ -45,13 +45,11 @@ export class MyShellTTSService {
       voiceSample?: Buffer; // For voice cloning
     } = {}
   ): Promise<{ audioUrl: string; duration: number }> {
-    console.log(`🎤 MyShell AI TTS generating for ${characterId}: "${text.substring(0, 50)}..."`);
     
     try {
       const voice = this.getVoiceForCharacter(characterId, options.gender);
       const speed = options.speedMultiplier || 1.0;
       
-      console.log(`🚀 Using MyShell AI voice: ${voice} with speed: ${speed}x`);
       
       // Clean text for better TTS
       const cleanText = text
@@ -75,7 +73,6 @@ export class MyShellTTSService {
           enabled: true,
           sample: options.voiceSample.toString('base64'),
         };
-        console.log(`🎭 MyShell AI: Voice cloning enabled for ${characterId}`);
       }
 
       // Make API request to MyShell AI
@@ -101,7 +98,6 @@ export class MyShellTTSService {
 
       fs.writeFileSync(outputPath, audioBuffer);
 
-      console.log(`✅ MyShell AI TTS success: ${audioBuffer.length} bytes`);
 
       // Convert to base64 for immediate use
       const base64Audio = audioBuffer.toString('base64');
@@ -123,7 +119,6 @@ export class MyShellTTSService {
 
   // Clone a voice from audio sample
   async cloneVoice(audioSample: Buffer, voiceName: string): Promise<string> {
-    console.log(`🎭 MyShell AI: Cloning voice "${voiceName}"...`);
     
     try {
       const response = await fetch(`${this.baseUrl}/voice-clone`, {
@@ -144,7 +139,6 @@ export class MyShellTTSService {
       }
 
       const result = await response.json();
-      console.log(`✅ MyShell AI: Voice cloned successfully as "${result.voice_id}"`);
       
       return result.voice_id;
     } catch (error: any) {

@@ -38,9 +38,6 @@ export function AudioControls({
   useEffect(() => {
     if (audioUrl && audioUrl !== previousAudioUrl.current) {
       previousAudioUrl.current = audioUrl;
-      console.log('🎵 Loading new audio URL, size:', audioUrl.length, 'chars');
-      console.log('🎵 Audio URL format:', audioUrl.substring(0, 80) + '...');
-      console.log('🎵 Is base64 data URL:', audioUrl.startsWith('data:audio/'));
       
       // Clean up previous audio
       if (audioRef.current) {
@@ -71,22 +68,18 @@ export function AudioControls({
       const handleLoadedMetadata = () => {
         setDuration(audio.duration || 0);
         setAudioLoaded(true);
-        console.log('Audio loaded, duration:', audio.duration);
         
         // Attempt auto-play when audio is ready
         if (autoPlay) {
-          console.log('🎵 AudioControls: Attempting auto-play with shared manager');
           attemptAutoplay(audio, {
             volume: isMuted ? 0 : volume[0] / 100,
             retryAttempts: 2,
             fallbackToMuted: true,
             onFallback: () => {
-              console.log('🔄 AudioControls: Auto-play failed, manual control available');
               // Audio controls remain available for manual interaction
             }
           }).then(success => {
             if (success) {
-              console.log('✅ AudioControls: Auto-play successful');
               setIsPlaying(true);
               onPlaybackChange?.(true);
             }
@@ -102,7 +95,6 @@ export function AudioControls({
       };
       const handleError = (e: any) => {
         console.error('Audio loading failed:', e);
-        console.log('Audio URL causing error:', audioUrl?.substring(0, 100) + '...');
         setAudioError('Failed to load audio');
         setAudioLoaded(false);
         onPlaybackChange?.(false);

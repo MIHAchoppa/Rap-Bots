@@ -97,5 +97,3 @@ export async function withRetry<T>(
   
   throw lastError;
 }
-
-console.log('✅ Database configured with HTTP client and retry logic');

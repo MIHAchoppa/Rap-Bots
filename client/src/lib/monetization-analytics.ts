@@ -37,7 +37,6 @@ class MonetizationAnalytics {
     // Send to analytics backend
     this.sendToBackend(fullImpression);
     
-    console.log(`📊 Ad Impression: ${impression.adType}`, impression);
   }
 
   /**
@@ -52,7 +51,6 @@ class MonetizationAnalytics {
       impression.clicked = true;
     }
     
-    console.log(`👆 Ad Click: ${adType}`, { userId, battleId });
     
     // Send click event to backend
     this.sendToBackend({
