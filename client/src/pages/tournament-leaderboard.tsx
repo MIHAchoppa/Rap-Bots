@@ -180,7 +180,7 @@ export default function TournamentLeaderboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <>{renderLeaderboardContent()}</>
+            {renderLeaderboardContent()}
           </CardContent>
         </Card>
 
