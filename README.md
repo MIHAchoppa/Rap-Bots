@@ -38,5 +38,27 @@ To get started with the Rap Bots project, follow these steps:
 
 ## Additional Resources
 - **[Tokenomics](./TOKENOMICS.md)**: Learn about the $SHELL token that powers the MyShell ecosystem.
+- **[Complete System Documentation](./COMPLETE_SYSTEM_DOCUMENTATION.md)**: Comprehensive guide to the Clone System, Training System, and SEO optimization.
+- **[Production Deployment Guide](./PRODUCTION_DEPLOYMENT_GUIDE.md)**: Instructions for deploying the application to production.
+
+## Development & Scaling Resources
+
+### 🎯 For Development Teams
+
+If you're working on scaling and debugging this application with multiple agents/developers:
+
+**👉 START HERE: [Executive Summary](./EXECUTIVE_SUMMARY.md)** - High-level overview and strategy approval
+
+**📊 Full Documentation: [Visual Summary & Index](./VISUAL_SUMMARY_INDEX.md)** - Complete navigation hub
+
+This comprehensive guide divides work between three specialized agents (Frontend, Backend, Infrastructure) and includes:
+
+- **[📋 Agent Debugging & Scaling Plan](./AGENT_DEBUGGING_SCALING_PLAN.md)**: Complete strategy with detailed task breakdown, priority matrix, and success metrics (700+ lines)
+- **[✅ Agent Task Assignments](./AGENT_TASK_ASSIGNMENTS.md)**: Quick reference for daily tasks and responsibilities (285+ lines)
+- **[🔄 Agent Workflow Map](./AGENT_WORKFLOW_MAP.md)**: Visual diagrams for development flow and team coordination (429+ lines)
+- **[🚀 Quick Start Guide](./QUICK_START_3_AGENT_STRATEGY.md)**: Step-by-step implementation guide to get started immediately (368+ lines)
+- **[✓ Plan Validation](./PLAN_VALIDATION.md)**: Verification of all identified issues with 100% accuracy confirmation (292+ lines)
+
+**Total Documentation**: 2,900+ lines across 6 files providing a battle-tested roadmap for systematically debugging, optimizing, and scaling the Rap Bots platform.
 
 We hope you enjoy using Rap Bots!
