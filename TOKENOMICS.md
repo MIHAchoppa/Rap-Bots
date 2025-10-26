@@ -16,10 +16,10 @@ The total supply of $SHELL is capped at **1,000,000,000 tokens**, which will be 
 | Advisors | 3% | 0% | 1 year cliff and linear release over following 3 years |
 | Team | 12% | 0% | 1 year cliff and linear release over following 4 years |
 | IDO | 4% | 4% | Unlocked at TGE |
-| Marketing | 2.5% | 2.5% | 2.5% unlock at TGE, utilizing 1% at end of third month and 1% at the end of six month |
+| Marketing | 2.5% | 2.5% | 2.5% unlock at TGE, utilizing 1% at end of third month and 1% at the end of six months |
 | Binance Wallet Airdrop | 1% | 1% | Unlocked at TGE |
 | Ecosystem and Treasury | 8.5% | 2.5% | 2.5% unlock at TGE, rest linear vest over 5 years |
-| Binance HODLer | 5% | 5% | 2.5% upon Binance listing and 2.5% at the end of six month |
+| Binance HODLer | 5% | 5% | 2.5% upon Binance listing and 2.5% at the end of six months |
 | Community Incentive | 30% | 7% | 7% unlock at TGE, rest linear vest over 5 years |
 | Liquidity | 5% | 5% | Unlocked at TGE |
 | **Total** | **100%** | **27%** | |
