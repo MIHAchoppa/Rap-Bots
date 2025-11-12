@@ -1,26 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-
-export interface Attack {
-  name: string;
-  power: number;
-  description: string;
-  type: string;
-}
-
-export interface CharacterCardData {
-  name: string;
-  rapStyle: string;
-  bio: string;
-  attacks: Attack[];
-  stats: {
-    flow: number;
-    wordplay: number;
-    delivery: number;
-    stage_presence: number;
-  };
-  generatedAt?: Date;
-}
+import { Attack, CharacterCardData } from "@shared/schema";
 
 interface HuggingFaceInpaintRequest {
   inputs: {

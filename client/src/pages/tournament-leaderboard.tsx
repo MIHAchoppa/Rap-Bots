@@ -29,6 +29,12 @@ export default function TournamentLeaderboard() {
     queryKey: ['/api/tournaments/leaderboard'],
   });
 
+  // Find current user's entry in leaderboard
+  const userEntry = React.useMemo(() => {
+    if (!user || !leaderboard) return null;
+    return leaderboard.find(entry => entry.userId === (user as any).id);
+  }, [user, leaderboard]);
+
   const getRankIcon = (rank: number) => {
     switch (rank) {
       case 1:
@@ -56,7 +62,7 @@ export default function TournamentLeaderboard() {
   };
 
   // Render leaderboard content
-  const renderLeaderboardContent = (): React.ReactNode => {
+  const renderLeaderboardContent = () => {
     if (isLoading) {
       return (
         <div className="space-y-4">
@@ -232,28 +238,22 @@ export default function TournamentLeaderboard() {
         </div>
 
         {/* Social Sharing for User's Rank */}
-        {(user && leaderboard && (() => {
-          const userEntry = leaderboard.find(entry => entry.userId === (user as any).id);
-          if (userEntry) {
-            return (
-              <div className="mt-8">
-                <SocialShare
-                  title="Rap Battle AI Tournament Leaderboard"
-                  text={`🏆 Ranking #${userEntry.rank} on the Rap Battle AI leaderboard! ${userEntry.totalPoints.toLocaleString()} points earned through epic AI battles! Think you can climb higher?`}
-                  hashtags={['RapBattleAI', 'Leaderboard', 'Ranked', 'TournamentChampion']}
-                  leaderboardData={{
-                    rank: userEntry.rank,
-                    username: userEntry.username,
-                    score: userEntry.totalPoints
-                  }}
-                  variant="default"
-                  className="mb-6"
-                />
-              </div>
-            );
-          }
-          return null;
-        })()) as React.ReactNode}
+        {userEntry && (
+          <div className="mt-8">
+            <SocialShare
+              title="Rap Battle AI Tournament Leaderboard"
+              text={`🏆 Ranking #${userEntry.rank} on the Rap Battle AI leaderboard! ${userEntry.totalPoints.toLocaleString()} points earned through epic AI battles! Think you can climb higher?`}
+              hashtags={['RapBattleAI', 'Leaderboard', 'Ranked', 'TournamentChampion']}
+              leaderboardData={{
+                rank: userEntry.rank,
+                username: userEntry.username,
+                score: userEntry.totalPoints
+              }}
+              variant="default"
+              className="mb-6"
+            />
+          </div>
+        )}
       </div>
     </div>
   );
