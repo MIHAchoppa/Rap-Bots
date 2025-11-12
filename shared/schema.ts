@@ -368,3 +368,25 @@ export type UserClone = typeof userClones.$inferSelect;
 export const userCloneRelations = relations(userClones, ({ one }) => ({
   user: one(users, { fields: [userClones.userId], references: [users.id] }),
 }));
+
+// Character Card interfaces for user profile cards
+export interface Attack {
+  name: string;
+  power: number;
+  description: string;
+  type: string;
+}
+
+export interface CharacterCardData {
+  name: string;
+  rapStyle: string;
+  bio: string;
+  attacks: Attack[];
+  stats: {
+    flow: number;
+    wordplay: number;
+    delivery: number;
+    stage_presence: number;
+  };
+  generatedAt?: Date;
+}
