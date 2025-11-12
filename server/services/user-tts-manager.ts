@@ -83,8 +83,8 @@ export class UserTTSManager {
       // Try user's preferred service first
       if (preferredService === 'myshell') {
         try {
-          // Try system MyShell API key
-          const apiKey = process.env.MYSHELL_API_KEY;
+          // Try user's MyShell API key first, then fallback to system key
+          const apiKey = user.myshellApiKey || process.env.MYSHELL_API_KEY;
           if (apiKey) {
             const myshellInstance = this.getMyShellInstance(apiKey, true);
             return await myshellInstance.generateTTS(text, options.characterId, {
@@ -253,9 +253,12 @@ export class UserTTSManager {
         return await instance.testConnection();
       }
 
-      if (service === 'myshell' && process.env.MYSHELL_API_KEY) {
-        const instance = this.getMyShellInstance(process.env.MYSHELL_API_KEY, true);
-        return await instance.testConnection();
+      if (service === 'myshell') {
+        const apiKey = user.myshellApiKey || process.env.MYSHELL_API_KEY;
+        if (apiKey) {
+          const instance = this.getMyShellInstance(apiKey, true);
+          return await instance.testConnection();
+        }
       }
 
       return false;

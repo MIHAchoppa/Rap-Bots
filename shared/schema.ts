@@ -148,7 +148,8 @@ export const users = pgTable("users", {
   openaiApiKey: varchar("openai_api_key"), // User's encrypted OpenAI API key
   groqApiKey: varchar("groq_api_key"), // User's encrypted Groq API key
   elevenlabsApiKey: varchar("elevenlabs_api_key"), // User's encrypted ElevenLabs API key
-  preferredTtsService: varchar("preferred_tts_service").default("elevenlabs"), // "openai", "groq", "elevenlabs", "system"
+  myshellApiKey: varchar("myshell_api_key"), // User's encrypted MyShell API key
+  preferredTtsService: varchar("preferred_tts_service").default("elevenlabs"), // "openai", "groq", "elevenlabs", "myshell", "system"
   // Profile fields
   bio: text("bio"), // User bio/description
   rapStyle: varchar("rap_style"), // User's preferred rap style
